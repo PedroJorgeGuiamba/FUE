@@ -1,0 +1,18 @@
+﻿<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Empresa Criada com Sucesso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>A empresa foi criada com sucesso! O que deseja fazer agora?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("CreateSucursal", "Sucursal", new { empresaId = Model.EmpresaId })" class="btn btn-primary">Cadastrar Sucursal</a>
+                <a href="@Url.Action("Details", "Sede", new { id = Model.EmpresaId })" class="btn btn-secondary">Ver Detalhes da Empresa</a>
+                <a href="@Url.Action("Create", "Sede")" class="btn btn-success">OK</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+﻿@model Teste.ViewModels.CadastroBemViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutFormando.cshtml";
+}
+
+
+<h2>
+    FORMULÁRIO DE CADASTRO E ACTUALIZAÇÃO DOS BENS E SERVIÇOS DAS EMPRESAS E
+    INSTITUIÇÕES SEM FINS LUCRATIVOS
+</h2>
+
+<hr />
+
+<form asp-controller="Bem" asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="form-group">
+        <label asp-for="Descricao"></label>
+        <input asp-for="Descricao" class="form-control" />
+        <span asp-validation-for="Descricao" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CodigoCNBS"></label>
+        <input asp-for="CodigoCNBS" class="form-control" />
+        <span asp-validation-for="CodigoCNBS" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-success form-control">Register</button>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

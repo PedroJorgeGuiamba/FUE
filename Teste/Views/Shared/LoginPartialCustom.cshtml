@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Teste.Models
+@using Teste.Data
+@using Microsoft.EntityFrameworkCore
+@inject FueDbContext _context
+
+
+<ul class="navbar-nav">  
+    <li class="navbar-nav">
+        <a class="nav-link" asp-controller="Sede" asp-action="Create">FUE</a>
+    </li>
+    <li class="navbar-nav">
+        <a class="nav-link" asp-controller="Sede" asp-action="Index">Lista de Empresas</a>
+    </li>
+    <li class="navbar-nav">
+        <a class="nav-link" asp-controller="Actividade" asp-action="Create">Cadastro de Actividades</a>
+    </li>
+    <li class="navbar-nav">
+        <a class="nav-link" asp-controller="Bem" asp-action="Create">Cadastro de Bens</a>
+    </li>
+</ul>

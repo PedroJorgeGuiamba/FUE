@@ -1,0 +1,290 @@
+<script>
+        function toggleSucursalSection() {
+            const sucursalValue = $('#SucursalNoPais').val()?.toLowerCase().trim();
+            const sucursalSection = $('#sucursalSection');
+            const quantidadeGroup = $('#quantidadeSucursalGroup');
+
+            const deveMostrar = sucursalValue === 'sim' || sucursalValue === '1' || sucursalValue === 'true';
+
+            if (deveMostrar) {
+                sucursalSection.show();
+                quantidadeGroup.show();
+            } else {
+                sucursalSection.hide();
+                quantidadeGroup.hide();
+
+                // Desabilitar os campos da sucursal para que NÃO sejam enviados no POST
+                sucursalSection.find('input, select, textarea').each(function () {
+                    $(this).prop('disabled', true);
+                });
+            }
+        }
+
+        // Reabilita todos os campos da sucursal antes de enviar o form (caso estejam visíveis)
+        $('form').on('submit', function () {
+            $('#sucursalSection').find('input, select, textarea').prop('disabled', false);
+        });
+
+        // Inicialização
+        $(document).ready(function () {
+            toggleSucursalSection();
+            $('#SucursalNoPais').on('change', toggleSucursalSection);
+        });
+
+        function toggleSucursalSection() {
+            const sucursalValue = $('#SucursalNoPais').val()?.toLowerCase().trim();
+            const sucursalSection = $('#sucursalSection');
+            const quantidadeGroup = $('#quantidadeSucursalGroup');
+
+            const deveMostrar = sucursalValue === 'sim' || sucursalValue === '1' || sucursalValue === 'true';
+
+            if (deveMostrar) {
+                sucursalSection.show();
+                quantidadeGroup.show();
+            } else {
+                sucursalSection.hide();
+                quantidadeGroup.hide();
+
+                // Limpar o conteúdo da seção de sucursais
+                sucursalSection.empty();
+
+                // Limpar o campo de quantidade
+                $('#QuantidadeSucursalNoPais').val('');
+            }
+        }
+
+        function generateSucursalForms() {
+            const quantidade = parseInt($('#QuantidadeSucursalNoPais').val()) || 0;
+            const sucursalSection = $('#sucursalSection');
+
+            // Limpar formulários existentes
+            sucursalSection.empty();
+
+            if (quantidade > 0) {
+                for (let i = 1; i <= quantidade; i++) {
+                    const sucursalFormHTML = `
+                        <div class="card mb-3">
+                            <div class="card-header text-bg-dark mb-3">
+                                AA1: IDENTIFICAÇÃO DO ESTABELECIMENTO OU SUCURSAL ${i}
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-3">
+                                        <label for="NUIT_Sucursal_${i}">NUIT</label>
+                                        <input id="NUIT_Sucursal_${i}" name="Sucursais[${i-1}].NUIT_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Nome_Sucursal_${i}">Nome</label>
+                                        <input id="Nome_Sucursal_${i}" name="Sucursais[${i-1}].Nome_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Sigla_Sucursal_${i}">Sigla/ Nome Comercial:</label>
+                                        <input id="Sigla_Sucursal_${i}" name="Sucursais[${i-1}].Sigla_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="NumeroAlvara_Sucursal_${i}">Número da Licença/ Alvará:</label>
+                                        <input id="NumeroAlvara_Sucursal_${i}" name="Sucursais[${i-1}].NumeroAlvara_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="AnoConstituicao_Sucursal_${i}">Ano de constituição:</label>
+                                        <input id="AnoConstituicao_Sucursal_${i}" name="Sucursais[${i-1}].AnoConstituicao_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="DataInicioAno_Sucursal_${i}">Início de actividade - Ano:</label>
+                                        <input id="DataInicioAno_Sucursal_${i}" name="Sucursais[${i-1}].DataInicioAno_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="DataInicioMes_Sucursal_${i}">Início de actividade - Mês:</label>
+                                        <input id="DataInicioMes_Sucursal_${i}" name="Sucursais[${i-1}].DataInicioMes_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header text-bg-dark mb-3">
+                                AA2: LOCALIZAÇÃO DO ESTABELECIMENTO OU SUCURSAL ${i}
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-3">
+                                        <label for="Provincia_Sucursal_${i}">Nome da Província:</label>
+                                        <input id="Provincia_Sucursal_${i}" name="Sucursais[${i-1}].Provincia_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Distrito_Sucursal_${i}">Nome do Distrito:</label>
+                                        <input id="Distrito_Sucursal_${i}" name="Sucursais[${i-1}].Distrito_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Bairro_Sucursal_${i}">Nome do Bairro:</label>
+                                        <input id="Bairro_Sucursal_${i}" name="Sucursais[${i-1}].Bairro_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="AvenidaRua_Sucursal_${i}">Nome da Avenida/Rua:</label>
+                                        <input id="AvenidaRua_Sucursal_${i}" name="Sucursais[${i-1}].AvenidaRua_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Numero_Sucursal_${i}">Número</label>
+                                        <input id="Numero_Sucursal_${i}" name="Sucursais[${i-1}].Numero_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Latitude_Sucursal_${i}">Coordenadas geográficas: Latitude:</label>
+                                        <input id="Latitude_Sucursal_${i}" name="Sucursais[${i-1}].Latitude_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Longitude_Sucursal_${i}">Coordenadas geográficas: Longitude:</label>
+                                        <input id="Longitude_Sucursal_${i}" name="Sucursais[${i-1}].Longitude_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Referencia_Sucursal_${i}">
+                                            Detalhe de proximidade
+                                            (Descreva algo próximo que ajude
+                                            a localizar a entidade):
+                                        </label>
+                                        <input id="Referencia_Sucursal_${i}" name="Sucursais[${i-1}].Referencia_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header text-bg-dark mb-3">
+                                AA3: CONTACTOS DO ESTABELECIMENTO OU SUCURSAL ${i}
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-3">
+                                        <label for="Fax1_Sucursal_${i}">Fax:</label>
+                                        <input id="Fax1_Sucursal_${i}" name="Sucursais[${i-1}].Fax1_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Fax2_Sucursal_${i}">Fax:</label>
+                                        <input id="Fax2_Sucursal_${i}" name="Sucursais[${i-1}].Fax2_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Telemovel1_Sucursal_${i}">Telemovel:</label>
+                                        <input id="Telemovel1_Sucursal_${i}" name="Sucursais[${i-1}].Telemovel1_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Telemovel2_Sucursal_${i}">Telemovel:</label>
+                                        <input id="Telemovel2_Sucursal_${i}" name="Sucursais[${i-1}].Telemovel2_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Telemovel3_Sucursal_${i}">Telemovel:</label>
+                                        <input id="Telemovel3_Sucursal_${i}" name="Sucursais[${i-1}].Telemovel3_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Email_Sucursal_${i}">Email:</label>
+                                        <input id="Email_Sucursal_${i}" name="Sucursais[${i-1}].Email_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="Website_Sucursal_${i}">Website:</label>
+                                        <input id="Website_Sucursal_${i}" name="Sucursais[${i-1}].Website_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header text-bg-dark mb-3">
+                                AA4: INFORMAÇÃO SOBRE A GESTÃO DO ESTABELECIMENTO OU SUCURSAL ${i}
+                            </div>
+                            <div class="card-body">
+                                <!-- Conteúdo vazio conforme original -->
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header text-bg-dark mb-3">
+                                BB1: CARACTERIZAÇÃO DO ESTABELECIMENTO OU SUCURSAL ${i}
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-3">
+                                        <label for="NomeResponsavel_Sucursal_${i}">Nome:</label>
+                                        <input id="NomeResponsavel_Sucursal_${i}" name="Sucursais[${i-1}].NomeResponsavel_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="FuncaoResponsavel_Sucursal_${i}">Função/Cargo:</label>
+                                        <input id="FuncaoResponsavel_Sucursal_${i}" name="Sucursais[${i-1}].FuncaoResponsavel_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="TelemovelResponsavel_Sucursal_${i}">Telemovel:</label>
+                                        <input id="TelemovelResponsavel_Sucursal_${i}" name="Sucursais[${i-1}].TelemovelResponsavel_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="EmailResponsavel_Sucursal_${i}">E-mail:</label>
+                                        <input id="EmailResponsavel_Sucursal_${i}" name="Sucursais[${i-1}].EmailResponsavel_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="NumTrabalhadoresHomens_Sucursal_${i}">Número de trabalhadores: Homens:</label>
+                                        <input id="NumTrabalhadoresHomens_Sucursal_${i}" name="Sucursais[${i-1}].NumTrabalhadoresHomens_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="NumTrabalhadoresMulheres_Sucursal_${i}">Número de trabalhadores: Mulheres:</label>
+                                        <input id="NumTrabalhadoresMulheres_Sucursal_${i}" name="Sucursais[${i-1}].NumTrabalhadoresMulheres_Sucursal" class="form-control" />
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    sucursalSection.append(sucursalFormHTML);
+                }
+            }
+        }
+
+        // Reabilita todos os campos da sucursal antes de enviar o form (caso estejam visíveis)
+        $('form').on('submit', function () {
+            $('#sucursalSection').find('input, select, textarea').prop('disabled', false);
+        });
+
+        // Inicialização
+        $(document).ready(function () {
+            toggleSucursalSection();
+
+            // Event listeners
+            $('#SucursalNoPais').on('change', function() {
+                toggleSucursalSection();
+                // Limpar formulários quando mudar para "Não"
+                if (!$(this).val() || $(this).val().toLowerCase() !== 'sim') {
+                    $('#sucursalSection').empty();
+                    $('#QuantidadeSucursalNoPais').val('');
+                }
+            });
+
+            $('#QuantidadeSucursalNoPais').on('change blur', function() {
+                const sucursalValue = $('#SucursalNoPais').val()?.toLowerCase().trim();
+                if (sucursalValue === 'sim' || sucursalValue === '1' || sucursalValue === 'true') {
+                    generateSucursalForms();
+                }
+            });
+        });

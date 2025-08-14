@@ -1,0 +1,337 @@
+using Teste.Data;
+using Teste.Models;
+using Teste.Services;
+using Teste.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace Teste.Controllers
+{
+    public class SedeController : Controller
+    {
+
+        private readonly SedeService _sedeservice;
+        private readonly LocalizacaoService _localizacaoservice;
+        private readonly ContactoService _contactoservice;
+        private readonly FueDbContext _context;
+        private readonly ActividadeService _actividadeService;
+        private readonly BemService _bemService;
+
+        public SedeController(
+            LocalizacaoService localizacaoService,
+            ContactoService contacto,
+            FueDbContext fueDbContext,
+            ActividadeService actividadeService,
+            SedeService sedeService,
+            BemService bemService)
+        {
+            _context = fueDbContext;
+            _contactoservice = contacto;
+            _localizacaoservice = localizacaoService;
+            _sedeservice = sedeService;
+            _actividadeService = actividadeService;
+            _bemService = bemService;
+        }
+
+        
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            var actividades = await _actividadeService.GetAllAsync();
+            var bens = await _bemService.GetAllAsync();
+
+            var model = new CadastroEmpresaViewModel
+            {
+                TipoEntidades = ObterTiposEntidade()
+                ,
+                FormaJuridicas = ObterFormaJuridica()
+                ,
+                SituacaoActividades = obterSituacaoActividade()
+                ,
+                GrupoEmpresarials = obterGrupoEmpresarial()
+                ,
+                SucursalNosPaises = obterSucursalNoPais()
+                ,
+                TipoContabilidades = obterTipoContabilidade()
+                
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CadastroEmpresaViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                await PopularDropDowns(model);
+                return View(model);
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // 1. Localização da sede
+                var localizacao = new Localizacao
+                {
+                    Provincia = model.Provincia,
+                    Distrito = model.Distrito,
+                    Bairro = model.Bairro,
+                    AvenidaRua = model.AvenidaRua,
+                    Numero = model.Numero,
+                    Latitude = (float)model.Latitude,
+                    Longitude = (float)model.Longitude,
+                    Referencia = model.Referencia
+                };
+                _context.Localizacoes.Add(localizacao);
+                await _context.SaveChangesAsync();
+
+                // 2. Empresa
+                var empresa = new Empresa
+                {
+                    NUIT = model.NUIT,
+                    Nome = model.Nome,
+                    Sigla = model.Sigla,
+                    NumeroAlvara = model.NumeroAlvara,
+                    AnoConstituicao = model.AnoConstituicao,
+                    DataInicioAno = model.DataInicioAno,
+                    DataInicioMes = model.DataInicioMes,
+                    LocalizacaoId = localizacao.LocalizacaoId,
+                    NumTrabalhadoresHomens = model.NumTrabalhadoresHomens,
+                    NumTrabalhadoresMulheres = model.NumTrabalhadoresMulheres,
+                    TipoEntidade = model.TipoEntidade,
+                    FormaJuridica = model.FormaJuridica,
+                    TipoContabilidade = model.TipoContabilidade,
+                    SituacaoActividade = model.SituacaoActividade,
+                    SucursalNoPais = model.SucursalNoPais,
+                    QuantidadeSucursalNoPais = model.QuantidadeSucursalNoPais,
+                    GrupoEmpresarial = model.GrupoEmpresarial,
+                    NomeGrupoEmpresarial = model.NomeGrupoEmpresarial,
+                    PaisGrupoEmpresarial = model.PaisGrupoEmpresarial,
+                    CapitalSocial = model.CapitalSocial,
+                    VolumeNegocios = model.VolumeNegocios,
+                    Despesas = model.Despesas,
+                    CapitalSocialPublico = model.CapitalSocialPublico,
+                    CapitalPrivadoNacional = model.CapitalPrivadoNacional,
+                    CapitalPrivadoEstrangeiro = model.CapitalPrivadoEstrangeiro
+                };
+                _context.Empresas.Add(empresa);
+                await _context.SaveChangesAsync();
+
+                // 3. Contacto sede
+                var contacto = new Contacto
+                {
+                    Fax1 = model.Fax1,
+                    Fax2 = model.Fax2,
+                    Telemovel1 = model.Telemovel1,
+                    Telemovel2 = model.Telemovel2,
+                    Telemovel3 = model.Telemovel3,
+                    Email = model.Email,
+                    Website = model.Website,
+                    SedeId = empresa.Id
+                };
+                _context.Contactos.Add(contacto);
+                await _context.SaveChangesAsync();
+
+                // 4. Responsável sede
+                var responsavel = new Responsavel
+                {
+                    SedeId = empresa.Id,
+                    Nome = model.NomeResponsavel,
+                    Funcao = model.FuncaoResponsavel,
+                    Telemovel = model.TelemovelResponsavel,
+                    Email = model.EmailResponsavel
+                };
+                _context.Responsaveis.Add(responsavel);
+                await _context.SaveChangesAsync();
+
+                if (DeveCriarSucursal(model))
+                {
+                    var localizacaoSucursal = new Localizacao
+                    {
+                        Provincia = model.Provincia_Sucursal,
+                        Distrito = model.Distrito_Sucursal,
+                        Bairro = model.Bairro_Sucursal,
+                        AvenidaRua = model.AvenidaRua_Sucursal,
+                        Numero = model.Numero_Sucursal ?? 0,
+                        Latitude = (float)model.Latitude_Sucursal,
+                        Longitude = (float)model.Longitude_Sucursal,
+                        Referencia = model.Referencia_Sucursal
+                    };
+                    _context.Localizacoes.Add(localizacaoSucursal);
+                    await _context.SaveChangesAsync();
+
+                    var sucursal = new Sucursal
+                    {
+                        NUIT = model.NUIT_Sucursal,
+                        Nome = model.Nome_Sucursal,
+                        Sigla = model.Sigla_Sucursal,
+                        NumeroAlvara = model.NumeroAlvara_Sucursal,
+                        AnoConstituicao = model.AnoConstituicao_Sucursal ?? 0,
+                        DataInicioAno = model.DataInicioAno_Sucursal ?? 0,
+                        DataInicioMes = model.DataInicioMes_Sucursal ?? 0,
+                        LocalizacaoId = localizacaoSucursal.LocalizacaoId,
+                        NumTrabalhadoresHomens = model.NumTrabalhadoresHomens_Sucursal ?? 0,
+                        NumTrabalhadoresMulheres = model.NumTrabalhadoresMulheres_Sucursal ?? 0,
+                        EmpresaId = empresa.Id,
+                        TipoEntidade = model.TipoEntidade_Sucursal,
+                        SituacaoActividade = model.SituacaoActividade_Sucursal,
+                        GrupoEmpresarial = model.GrupoEmpresarial_Sucursal,
+                        NomeGrupoEmpresarial = model.NomeGrupoEmpresarial_Sucursal,
+                        PaisGrupoEmpresarial = model.PaisGrupoEmpresarial_Sucursal,
+                    };
+                    _context.Sucursais.Add(sucursal);
+                    await _context.SaveChangesAsync();
+
+                    var contactoSucursal = new Contacto
+                    {
+                        Fax1 = model.Fax1_Sucursal,
+                        Fax2 = model.Fax2_Sucursal,
+                        Telemovel1 = model.Telemovel1_Sucursal,
+                        Telemovel2 = model.Telemovel2_Sucursal,
+                        Telemovel3 = model.Telemovel3_Sucursal,
+                        Email = model.Email_Sucursal,
+                        Website = model.Website_Sucursal,
+                        SedeId = sucursal.Id
+                    };
+                    _context.Contactos.Add(contactoSucursal);
+                    
+                    var responsavelSucursal = new Responsavel
+                    {
+                        SedeId = sucursal.Id,
+                        Nome = model.NomeResponsavel_Sucursal,
+                        Funcao = model.FuncaoResponsavel_Sucursal,
+                        Telemovel = model.TelemovelResponsavel_Sucursal,
+                        Email = model.EmailResponsavel_Sucursal
+                    };
+                    _context.Responsaveis.Add(responsavelSucursal);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Finaliza transação
+                await transaction.CommitAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                ModelState.AddModelError(string.Empty, "Erro ao gravar os dados. Nenhum dado foi salvo.");
+                await PopularDropDowns(model);
+                return View(model);
+            }
+        }
+        
+
+        // Método auxiliar para verificar se deve criar sucursal
+        private bool DeveCriarSucursal(CadastroEmpresaViewModel model)
+        {
+            return !string.IsNullOrWhiteSpace(model.Nome_Sucursal)
+                  || model.Latitude_Sucursal != 0f
+                  || model.Longitude_Sucursal != 0f
+                  || !string.IsNullOrWhiteSpace(model.Telemovel1_Sucursal)
+                  || !string.IsNullOrWhiteSpace(model.Email_Sucursal)
+                  || !string.IsNullOrWhiteSpace(model.NomeResponsavel_Sucursal);
+
+            //return !string.IsNullOrEmpty(model.Nome_Sucursal) ||
+            //       !string.IsNullOrEmpty(model.NUIT_Sucursal) ||
+            //       !string.IsNullOrEmpty(model.Provincia_Sucursal);
+        }
+
+        private async Task PopularDropDowns(CadastroEmpresaViewModel model)
+
+                
+        {
+            model.TipoEntidades = ObterTiposEntidade();
+            model.SituacaoActividades = obterSituacaoActividade();
+            model.FormaJuridicas = ObterFormaJuridica();
+            model.GrupoEmpresarials = obterGrupoEmpresarial();
+            model.SucursalNosPaises = obterSucursalNoPais();
+            model.TipoContabilidades = obterTipoContabilidade();
+
+            
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarActividades(string termo)
+        {
+            var actividades = await _actividadeService.SearchAsync(termo);
+            return Json(actividades.Select(a => new { id = a.ActividadeId, text = $"{a.CodigoCAE} - {a.Descricao}" }));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarBens(string termo)
+        {
+            var bensOuServicos = await _bemService.SearchAsync(termo);
+            return Json(bensOuServicos.Select(a => new { id = a.BemId, text = $"{a.CodigoCNBS} - {a.Descricao}" }));
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        private List<SelectListItem> ObterFormaJuridica()
+        {
+            return new List<SelectListItem>
+            {
+                
+                new SelectListItem { Value = "Empresa Pública/Estatal", Text = "Empresa Pública/Estatal" },
+                new SelectListItem { Value = "Sociedade Anónima", Text = "Sociedade Anónima" },
+                new SelectListItem { Value = "Sociedade por Quotas", Text = "Sociedade por Quotas" },
+                new SelectListItem { Value = "Sociedade Unipessoal", Text = "Sociedade Unipessoal" },
+                new SelectListItem { Value = "Empresa Individual", Text = "Empresa Individual" },
+                new SelectListItem { Value = "Cooperativa", Text = "Cooperativa" },
+                new SelectListItem { Value = "Associação", Text = "Associação" },
+                new SelectListItem { Value = "Fundação", Text = "Fundação" },
+                new SelectListItem { Value= "Confissão Religiosa", Text = "Confissão Religiosa" },
+                new SelectListItem { Value = "ONG", Text = "Organização Não Governamental (ONG)" },
+                new SelectListItem { Value = "Outra", Text = "Outra" }
+            };
+        }
+        private List<SelectListItem> ObterTiposEntidade()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Sede", Text = "Sede" },
+                new SelectListItem { Value = "Sucursal", Text = "Sucursal" }
+            };
+        }
+        private List<SelectListItem> obterSucursalNoPais()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Sim", Text = "Sim" },
+                new SelectListItem { Value = "Não", Text = "Não" }
+            };
+        }
+        private List<SelectListItem> obterSituacaoActividade()
+        {
+            return new List<SelectListItem>
+            {
+                 
+                new SelectListItem { Value = "Aguarda início de actividade", Text = "Aguarda início de actividade" },
+                new SelectListItem { Value = "Em Actividade", Text = "Em Actividade" },
+                new SelectListItem { Value = "Interrompida", Text = "Interrompida" },
+                new SelectListItem { Value = "Cessada", Text = "Cessada" }
+            };
+        }
+        private List<SelectListItem> obterGrupoEmpresarial()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Sim", Text = "Sim" },
+                new SelectListItem { Value = "Não", Text = "Não" }
+            };
+        }
+        private List<SelectListItem> obterTipoContabilidade()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Organizada", Text = "Organizada" },
+                new SelectListItem { Value = "Não Organizada", Text = "Não Organizada" }
+            };
+        }
+    }
+}

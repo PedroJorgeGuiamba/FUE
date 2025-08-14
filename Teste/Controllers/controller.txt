@@ -1,0 +1,220 @@
+
+//,
+//// Adiciona aqui as atividades para o <select>
+//Actividades = actividades.Select(a => new SelectListItem
+//{
+//    Value = a.ActividadeId.ToString(),
+//    Text = $"{a.CodigoCAE} - {a.Descricao}"
+//}).ToList()
+//,
+//Bens = bens.Select(a => new SelectListItem
+//{
+//    Value = a.BemId.ToString(),
+//    Text = $"{a.CodigoCNBS} - {a.Descricao}"
+//}).ToList()
+
+
+// 6. Actividade Principal
+//var actividadeEmpresa = new ActividadeEmpresa
+//{
+//    EmpresaId = empresa.Id,
+//    ActividadeId = model.ActividadePrincipalId,
+//    Tipo = "Principal"
+//};
+//_context.ActividadeEmpresas.Add(actividadeEmpresa);
+//await _context.SaveChangesAsync();
+
+//var empresaBem = new EmpresaBem
+//{
+//    EmpresaId = empresa.Id,
+//    BemId = model.BemPrincipalId,
+//    Tipo = "Principal"
+//};
+//_context.EmpresaBens.Add(empresaBem);
+//await _context.SaveChangesAsync();
+
+//model.Actividades = (await _actividadeService.GetAllAsync())
+//    .Select(a => new SelectListItem
+//    {
+//        Value = a.ActividadeId.ToString(),
+//        Text = $"{a.CodigoCAE} - {a.Descricao}"
+//    }).ToList();
+
+//model.Bens = (await _bemService.GetAllAsync())
+//    .Select(a => new SelectListItem
+//    {
+//        Value = a.BemId.ToString(),
+//        Text = $"{a.CodigoCNBS} - {a.Descricao}"
+//    }).ToList();
+
+//public async Task<IActionResult> Create(CadastroEmpresaViewModel model)
+//{
+//    if (!ModelState.IsValid)
+//    {
+//        await PopularDropDowns(model);
+//        return View(model);
+//    }
+
+//    using var transaction = await _context.Database.BeginTransactionAsync();
+//    try
+//    {
+//        // 1. Criar localização da sede
+//        var localizacaoSede = new Localizacao
+//        {
+//            Provincia = model.Provincia,
+//            Distrito = model.Distrito,
+//            Bairro = model.Bairro,
+//            AvenidaRua = model.AvenidaRua,
+//            Numero = model.Numero,
+//            Latitude = (float)model.Latitude,
+//            Longitude = (float)model.Longitude,
+//            Referencia = model.Referencia
+//        };
+//        _context.Localizacoes.Add(localizacaoSede);
+
+//        // 2. Criar empresa principal
+//        var empresa = new Empresa
+//        {
+//            NUIT = model.NUIT,
+//            Nome = model.Nome,
+//            Sigla = model.Sigla,
+//            NumeroAlvara = model.NumeroAlvara,
+//            AnoConstituicao = model.AnoConstituicao,
+//            DataInicioAno = model.DataInicioAno,
+//            DataInicioMes = model.DataInicioMes,
+//            Localizacao = localizacaoSede, // Usar navegação
+//            NumTrabalhadoresHomens = model.NumTrabalhadoresHomens,
+//            NumTrabalhadoresMulheres = model.NumTrabalhadoresMulheres,
+//            TipoEntidade = model.TipoEntidade,
+//            FormaJuridica = model.FormaJuridica,
+//            TipoContabilidade = model.TipoContabilidade,
+//            SituacaoActividade = model.SituacaoActividade,
+//            SucursalNoPais = model.SucursalNoPais,
+//            QuantidadeSucursalNoPais = model.QuantidadeSucursalNoPais,
+//            GrupoEmpresarial = model.GrupoEmpresarial,
+//            NomeGrupoEmpresarial = model.NomeGrupoEmpresarial,
+//            PaisGrupoEmpresarial = model.PaisGrupoEmpresarial,
+//            CapitalSocial = model.CapitalSocial,
+//            VolumeNegocios = model.VolumeNegocios,
+//            Despesas = model.Despesas,
+//            CapitalSocialPublico = model.CapitalSocialPublico,
+//            CapitalPrivadoNacional = model.CapitalPrivadoNacional,
+//            CapitalPrivadoEstrangeiro = model.CapitalPrivadoEstrangeiro
+//        };
+//        _context.Empresas.Add(empresa);
+
+//        // 3. Criar contacto da sede
+//        var contactoSede = new Contacto
+//        {
+//            Fax1 = model.Fax1,
+//            Fax2 = model.Fax2,
+//            Telemovel1 = model.Telemovel1,
+//            Telemovel2 = model.Telemovel2,
+//            Telemovel3 = model.Telemovel3,
+//            Email = model.Email,
+//            Website = model.Website,
+//            // Baseado no diagrama, parece que Contacto se relaciona com Sede através de SedeId
+//            // Como Sede = Empresa, usamos o ID da empresa
+//            Sede = empresa // Usar navegação se disponível, ou SedeId = empresa.Id após SaveChanges
+//        };
+//        _context.Contactos.Add(contactoSede);
+
+//        // 4. Criar responsável da sede
+//        var responsavelSede = new Responsavel
+//        {
+//            EmpresaId = empresa, // Relacionamento com empresa
+//            Nome = model.NomeResponsavel,
+//            Funcao = model.FuncaoResponsavel,
+//            Telemovel = model.TelemovelResponsavel,
+//            Email = model.EmailResponsavel
+//        };
+//        _context.Responsaveis.Add(responsavelSede);
+
+//        // 5. Criar sucursal se houver dados
+//        if (!string.IsNullOrEmpty(model.Nome_Sucursal) || !string.IsNullOrEmpty(model.NUIT_Sucursal))
+//        {
+//            var localizacaoSucursal = new Localizacao
+//            {
+//                Provincia = model.Provincia_Sucursal,
+//                Distrito = model.Distrito_Sucursal,
+//                Bairro = model.Bairro_Sucursal,
+//                AvenidaRua = model.AvenidaRua_Sucursal,
+//                Numero = model.Numero_Sucursal ?? 0,
+//                Latitude = (float)(model.Latitude_Sucursal ?? 0),
+//                Longitude = (float)(model.Longitude_Sucursal ?? 0),
+//                Referencia = model.Referencia_Sucursal
+//            };
+//            _context.Localizacoes.Add(localizacaoSucursal);
+
+//            var sucursal = new Sucursal
+//            {
+//                NUIT = model.NUIT_Sucursal,
+//                Nome = model.Nome_Sucursal,
+//                Sigla = model.Sigla_Sucursal,
+//                NumeroAlvara = model.NumeroAlvara_Sucursal,
+//                AnoConstituicao = model.AnoConstituicao_Sucursal ?? 0,
+//                DataInicioAno = model.DataInicioAno_Sucursal ?? 0,
+//                DataInicioMes = model.DataInicioMes_Sucursal ?? 0,
+//                Localizacao = localizacaoSucursal,
+//                NumTrabalhadoresHomens = model.NumTrabalhadoresHomens_Sucursal ?? 0,
+//                NumTrabalhadoresMulheres = model.NumTrabalhadoresMulheres_Sucursal ?? 0,
+//                Empresa = empresa, // Relacionamento com empresa pai
+//                TipoEntidade = model.TipoEntidade_Sucursal,
+//                SituacaoActividade = model.SituacaoActividade_Sucursal,
+//                GrupoEmpresarial = model.GrupoEmpresarial_Sucursal,
+//                NomeGrupoEmpresarial = model.NomeGrupoEmpresarial_Sucursal,
+//                PaisGrupoEmpresarial = model.PaisGrupoEmpresarial_Sucursal,
+//            };
+//            _context.Sucursais.Add(sucursal);
+
+//            // 6. Contacto da sucursal
+//            var contactoSucursal = new Contacto
+//            {
+//                Fax1 = model.Fax1_Sucursal,
+//                Fax2 = model.Fax2_Sucursal,
+//                Telemovel1 = model.Telemovel1_Sucursal,
+//                Telemovel2 = model.Telemovel2_Sucursal,
+//                Telemovel3 = model.Telemovel3_Sucursal,
+//                Email = model.Email_Sucursal,
+//                Website = model.Website_Sucursal,
+//                // Baseado no diagrama, Contacto tem SedeId que pode referenciar tanto Empresa quanto Sucursal
+//                Sede = sucursal // Se Sucursal herda de uma classe base Sede, ou usar SedeId
+//            };
+//            _context.Contactos.Add(contactoSucursal);
+
+//            // 7. Responsável da sucursal
+//            var responsavelSucursal = new Responsavel
+//            {
+//                // Baseado no diagrama, Responsavel tem EmpresaId e SucursalId
+//                //Empresa = empresa,
+//                //Sucursal = sucursal,
+//                Nome = model.NomeResponsavel_Sucursal,
+//                Funcao = model.FuncaoResponsavel_Sucursal,
+//                Telemovel = model.TelemovelResponsavel_Sucursal,
+//                Email = model.EmailResponsavel_Sucursal
+//            };
+//            _context.Responsaveis.Add(responsavelSucursal);
+//        }
+
+//        // 8. Processar atividades da empresa se houver
+//        // (Baseado no diagrama, há uma tabela ActividadeEmpresas)
+//        // Este código seria adicionado se houvesse dados de atividades no ViewModel
+
+//        // 9. Salvar todas as alterações de uma só vez
+//        await _context.SaveChangesAsync();
+//        await transaction.CommitAsync();
+
+//        return RedirectToAction(nameof(Index));
+//    }
+//    catch (Exception ex)
+//    {
+//        await transaction.RollbackAsync();
+
+//        // Log do erro para debugging
+//        // _logger.LogError(ex, "Erro ao criar empresa: {ErrorMessage}", ex.Message);
+
+//        ModelState.AddModelError(string.Empty, "Erro ao gravar os dados. Nenhum dado foi salvo.");
+//        await PopularDropDowns(model);
+//        return View(model);
+//    }
+//}

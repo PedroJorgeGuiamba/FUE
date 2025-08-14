@@ -1,0 +1,362 @@
+﻿@model Teste.ViewModels.CadastroEmpresaViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutFormando.cshtml";
+    
+    ViewData["Title"] = "Formulário de Cadastro de Empresas";
+
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<h2>
+    FORMULÁRIO DE CADASTRO E ACTUALIZAÇÃO DE DADOS DAS EMPRESAS E
+    INSTITUIÇÕES SEM FINS LUCRATIVOS
+</h2>
+
+<hr />
+
+<form asp-controller="Sede" asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- Bloco A1: Identificação da Entidade -->
+    <div class="card mb-3">
+        <div class="card-header text-bg-dark mb-3">
+            A1: IDENTIFICAÇÃO DA ENTIDADE
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label asp-for="NUIT">NUIT da entidade:</label>
+                    <input asp-for="NUIT" class="form-control" />
+                    <span asp-validation-for="NUIT" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Nome">Nome da entidade:</label>
+                    <input asp-for="Nome" class="form-control" />
+                    <span asp-validation-for="Nome" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Sigla">Sigla/Nome Comercial:</label>
+                    <input asp-for="Sigla" class="form-control" />
+                    <span asp-validation-for="Sigla" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="NumeroAlvara">Número da Licença/Alvará:</label>
+                    <input asp-for="NumeroAlvara" class="form-control" />
+                    <span asp-validation-for="NumeroAlvara" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="AnoConstituicao">Ano de constituição:</label>
+                    <input asp-for="AnoConstituicao" class="form-control" type="number" />
+                    <span asp-validation-for="AnoConstituicao" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="DataInicioAno">Data de início de actividade - Ano:</label>
+                    <input asp-for="DataInicioAno" class="form-control" type="number" />
+                    <span asp-validation-for="DataInicioAno" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="DataInicioMes">Data de início de actividade - Mês:</label>
+                    <input asp-for="DataInicioMes" class="form-control" type="number" min="1" max="12" />
+                    <span asp-validation-for="DataInicioMes" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloco A2: Localização da Entidade -->
+    <div class="card mb-3">
+        <div class="card-header text-bg-dark mb-3">
+            A2: LOCALIZAÇÃO DA ENTIDADE
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label asp-for="Provincia">Nome da Província:</label>
+                    <input asp-for="Provincia" class="form-control" />
+                    <span asp-validation-for="Provincia" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Distrito">Nome do Distrito:</label>
+                    <input asp-for="Distrito" class="form-control" />
+                    <span asp-validation-for="Distrito" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Bairro">Nome do Bairro:</label>
+                    <input asp-for="Bairro" class="form-control" />
+                    <span asp-validation-for="Bairro" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="AvenidaRua">Nome da Avenida/Rua:</label>
+                    <input asp-for="AvenidaRua" class="form-control" />
+                    <span asp-validation-for="AvenidaRua" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Numero">Número:</label>
+                    <input asp-for="Numero" class="form-control" type="number" />
+                    <span asp-validation-for="Numero" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Latitude">Coordenadas geográficas: Latitude:</label>
+                    <input asp-for="Latitude" class="form-control" type="number" step="any" />
+                    <span asp-validation-for="Latitude" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Longitude">Coordenadas geográficas: Longitude:</label>
+                    <input asp-for="Longitude" class="form-control" type="number" step="any" />
+                    <span asp-validation-for="Longitude" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Referencia">Detalhe de proximidade:</label>
+                    <input asp-for="Referencia" class="form-control" />
+                    <span asp-validation-for="Referencia" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloco A3: Contactos da Entidade -->
+    <div class="card mb-3">
+        <div class="card-header text-bg-dark mb-3">
+            A3: CONTACTOS DA ENTIDADE
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label asp-for="Fax1">Telefone fixo:</label>
+                    <input asp-for="Fax1" class="form-control" />
+                    <span asp-validation-for="Fax1" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Fax2">Telefone fixo:</label>
+                    <input asp-for="Fax2" class="form-control" />
+                    <span asp-validation-for="Fax2" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Telemovel1">Telemóvel:</label>
+                    <input asp-for="Telemovel1" class="form-control" />
+                    <span asp-validation-for="Telemovel1" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Telemovel2">Telemóvel:</label>
+                    <input asp-for="Telemovel2" class="form-control" />
+                    <span asp-validation-for="Telemovel2" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Telemovel3">Telemóvel:</label>
+                    <input asp-for="Telemovel3" class="form-control" />
+                    <span asp-validation-for="Telemovel3" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Email">E-mail:</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="Website">Website:</label>
+                    <input asp-for="Website" class="form-control" />
+                    <span asp-validation-for="Website" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloco A5: Responsável pelo Preenchimento -->
+    <div class="card mb-3">
+        <div class="card-header text-bg-dark mb-3">
+            A5: RESPONSÁVEL PELO PREENCHIMENTO
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label asp-for="NomeResponsavel">Nome:</label>
+                    <input asp-for="NomeResponsavel" class="form-control" />
+                    <span asp-validation-for="NomeResponsavel" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="FuncaoResponsavel">Função/Cargo:</label>
+                    <input asp-for="FuncaoResponsavel" class="form-control" />
+                    <span asp-validation-for="FuncaoResponsavel" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="TelemovelResponsavel">Telemóvel:</label>
+                    <input asp-for="TelemovelResponsavel" class="form-control" />
+                    <span asp-validation-for="TelemovelResponsavel" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="EmailResponsavel">E-mail:</label>
+                    <input asp-for="EmailResponsavel" class="form-control" />
+                    <span asp-validation-for="EmailResponsavel" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloco B1: Caracterização da Entidade -->
+    <div class="card mb-3">
+        <div class="card-header text-bg-dark mb-3">
+            B1: CARACTERIZAÇÃO DA ENTIDADE
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label asp-for="TipoEntidade">Diga se esta entidade é:</label>
+                    <select asp-for="TipoEntidade" class="form-control select2" asp-items="Model.TipoEntidades">
+                        <option value="">Selecione o tipo de entidade</option>
+                    </select>
+                    <span asp-validation-for="TipoEntidade" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="SucursalNoPais">A entidade tem sucursais no País:</label>
+                    <select asp-for="SucursalNoPais" class="form-control select2" asp-items="Model.SucursalNosPaises" id="SucursalNoPais">
+                        <option value="">Selecione a opção</option>
+                    </select>
+                    <span asp-validation-for="SucursalNoPais" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3" id="quantidadeSucursalGroup">
+                    <label asp-for="QuantidadeSucursalNoPais">Quantidade de sucursais:</label>
+                    <input asp-for="QuantidadeSucursalNoPais" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="QuantidadeSucursalNoPais" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="GrupoEmpresarial">A entidade pertence a um grupo ou holding:</label>
+                    <select asp-for="GrupoEmpresarial" class="form-control select2" asp-items="Model.GrupoEmpresarials" id="GrupoEmpresarial">
+                        <option value="">Selecione a Opção</option>
+                    </select>
+                    <span asp-validation-for="GrupoEmpresarial" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3" id="NomeGrupoEmpresarial">
+                    <label asp-for="NomeGrupoEmpresarial">Nome do Grupo:</label>
+                    <input asp-for="NomeGrupoEmpresarial" class="form-control" />
+                    <span asp-validation-for="NomeGrupoEmpresarial" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3" id="PaisGrupoEmpresarial">
+                    <label asp-for="PaisGrupoEmpresarial">Localização do grupo (País):</label>
+                    <input asp-for="PaisGrupoEmpresarial" class="form-control" />
+                    <span asp-validation-for="PaisGrupoEmpresarial" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="SituacaoActividade">Situação perante actividade:</label>
+                    <select asp-for="SituacaoActividade" class="form-control select2" asp-items="Model.SituacaoActividades">
+                        <option value="">Selecione a situação perante a actividade</option>
+                    </select>
+                    <span asp-validation-for="SituacaoActividade" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="FormaJuridica">Forma Jurídica:</label>
+                    <select asp-for="FormaJuridica" class="form-control select2" asp-items="Model.FormaJuridicas">
+                        <option value="">Selecione a forma jurídica</option>
+                    </select>
+                    <span asp-validation-for="FormaJuridica" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="TipoContabilidade">Tipo de contabilidade:</label>
+                    <select asp-for="TipoContabilidade" class="form-control select2" asp-items="Model.TipoContabilidades">
+                        <option value="">Selecione o tipo de contabilidade</option>
+                    </select>
+                    <span asp-validation-for="TipoContabilidade" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloco B3: Informação Econômico-Financeira -->
+    <div class="card mb-3">
+        <div class="card-header text-bg-dark mb-3">
+            B3: INFORMAÇÃO ECONÔMICO-FINANCEIRA DA ENTIDADE
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label asp-for="CapitalSocial">Capital Social (MZN):</label>
+                    <input asp-for="CapitalSocial" class="form-control" type="number" step="0.01" min="0" />
+                    <span asp-validation-for="CapitalSocial" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="CapitalSocialPublico">Capital Social Público (%):</label>
+                    <input asp-for="CapitalSocialPublico" class="form-control" type="number" step="0.01" min="0" max="100" />
+                    <span asp-validation-for="CapitalSocialPublico" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="CapitalPrivadoNacional">Capital Social Privado Nacional (%):</label>
+                    <input asp-for="CapitalPrivadoNacional" class="form-control" type="number" step="0.01" min="0" max="100" />
+                    <span asp-validation-for="CapitalPrivadoNacional" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="CapitalPrivadoEstrangeiro">Capital Social Privado Estrangeiro (%):</label>
+                    <input asp-for="CapitalPrivadoEstrangeiro" class="form-control" type="number" step="0.01" min="0" max="100" />
+                    <span asp-validation-for="CapitalPrivadoEstrangeiro" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="VolumeNegocios">Volume de Negócios/Receitas Anuais (MZN):</label>
+                    <input asp-for="VolumeNegocios" class="form-control" type="number" step="0.01" min="0" />
+                    <span asp-validation-for="VolumeNegocios" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="Despesas">Despesas/Gastos Operacionais Anuais (MZN):</label>
+                    <input asp-for="Despesas" class="form-control" type="number" step="0.01" min="0" />
+                    <span asp-validation-for="Despesas" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="NumTrabalhadoresHomens">Número de trabalhadores: Homens:</label>
+                    <input asp-for="NumTrabalhadoresHomens" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="NumTrabalhadoresHomens" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="NumTrabalhadoresMulheres">Número de trabalhadores: Mulheres:</label>
+                    <input asp-for="NumTrabalhadoresMulheres" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="NumTrabalhadoresMulheres" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="form-group">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-success form-control">Register</button>
+        </div>
+    </div>
+</form>
+
+<!-- Modal de Sucesso -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Empresa Criada com Sucesso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>@TempData["SuccessMessage"] O que deseja fazer agora?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("Create", "Sucursal", new { empresaId = TempData["EmpresaId"] })" class="btn btn-primary">Cadastrar Sucursal</a>
+                <a href="@Url.Action("Details", "Sede", new { id = TempData["EmpresaId"] })" class="btn btn-secondary">Ver Detalhes da Empresa</a>
+                <a href="@Url.Action("Create", "Sede")" class="btn btn-success">OK</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <script src="@Url.Content("~/js/atividade-autocomplete.js")"></script>
+    <script src="@Url.Content("~/js/bem-autocomplete.js")"></script>
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            @if (TempData["SuccessMessage"] != null)
+            {
+                @: $('#successModal').modal('show');
+            }
+        });
+    </script>
+}

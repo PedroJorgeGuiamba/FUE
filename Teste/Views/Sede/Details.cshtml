@@ -1,0 +1,54 @@
+﻿@model Teste.Models.Empresa
+
+@{
+    ViewData["Title"] = "Detalhes da Empresa";
+}
+
+<h2 class="mb-4">Detalhes da Empresa</h2>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Nome</dt>
+            <dd class="col-sm-9">@Model.Nome</dd>
+
+            <dt class="col-sm-3">Sigla</dt>
+            <dd class="col-sm-9">@Model.Sigla</dd>
+
+            <dt class="col-sm-3">NUIT</dt>
+            <dd class="col-sm-9">@Model.NUIT</dd>
+
+            <dt class="col-sm-3">Número de Alvará</dt>
+            <dd class="col-sm-9">@Model.NumeroAlvara</dd>
+
+            <dt class="col-sm-3">Ano de Constituição</dt>
+            <dd class="col-sm-9">@Model.AnoConstituicao</dd>
+
+            <dt class="col-sm-3">Tipo de Entidade</dt>
+            <dd class="col-sm-9">@Model.TipoEntidade</dd>
+
+            <dt class="col-sm-3">Forma Jurídica</dt>
+            <dd class="col-sm-9">@Model.FormaJuridica</dd>
+
+            <dt class="col-sm-3">Situação da Actividade</dt>
+            <dd class="col-sm-9">@Model.SituacaoActividade</dd>
+
+            <dt class="col-sm-3">Capital Social</dt>
+            <dd class="col-sm-9">@Model.CapitalSocial</dd>
+
+            <dt class="col-sm-3">Volume de Negócios</dt>
+            <dd class="col-sm-9">@Model.VolumeNegocios</dd>
+
+            <dt class="col-sm-3">Despesas</dt>
+            <dd class="col-sm-9">@Model.Despesas</dd>
+        </dl>
+
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+        @* <a href="@Url.Action("Create", "Sucursal", new { empresaId = TempData["EmpresaId"] })" class="btn btn-primary">Cadastrar Sucursal</a> *@
+        <a asp-controller="Sucursal" asp-action="Create" asp-route-empresaId="@Model.Id" class="btn btn-primary">
+            Cadastrar Sucursal
+        </a>
+
+    </div>
+</div>

@@ -1,0 +1,218 @@
+﻿@*  @model Teste.ViewModels.CadastroSucursalViewModel *@
+@* @{ *@
+@*     ViewData["Title"] = "Criar Sucursal"; *@
+@* } *@
+
+@* <!-- Bloco AA1: Identificação da Sucursal --> *@
+@* <div class="card mb-3"> *@
+@*     <div class="card-header text-bg-dark mb-3"> *@
+@*         AA1: IDENTIFICAÇÃO DA SUCURSAL *@
+@*     </div> *@
+@*     <div class="card-body"> *@
+@*         <div class="row"> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="NUIT_Sucursal">NUIT da entidade:</label> *@
+@*                 <input asp-for="NUIT_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="NUIT_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Nome_Sucursal">Nome da entidade:</label> *@
+@*                 <input asp-for="Nome_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Nome_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Sigla_Sucursal">Sigla/Nome Comercial:</label> *@
+@*                 <input asp-for="Sigla_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Sigla_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="NumeroAlvara_Sucursal">Número da Licença/Alvará:</label> *@
+@*                 <input asp-for="NumeroAlvara_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="NumeroAlvara_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="AnoConstituicao_Sucursal">Ano de constituição:</label> *@
+@*                 <input asp-for="AnoConstituicao_Sucursal" class="form-control" type="number" /> *@
+@*                 <span asp-validation-for="AnoConstituicao_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="DataInicioAno_Sucursal">Data de início de actividade - Ano:</label> *@
+@*                 <input asp-for="DataInicioAno_Sucursal" class="form-control" type="number" /> *@
+@*                 <span asp-validation-for="DataInicioAno_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="DataInicioMes_Sucursal">Data de início de actividade - Mês:</label> *@
+@*                 <input asp-for="DataInicioMes_Sucursal" class="form-control" type="number" min="1" max="12" /> *@
+@*                 <span asp-validation-for="DataInicioMes_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="TipoEntidade_Sucursal">Diga se esta entidade é:</label> *@
+@*                 <select asp-for="TipoEntidade_Sucursal" class="form-control select2" asp-items="Model.TipoEntidades_Sucursal"> *@
+@*                     <option value="">Selecione o tipo de entidade</option> *@
+@*                 </select> *@
+@*                 <span asp-validation-for="TipoEntidade_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="SituacaoActividade_Sucursal">Situação perante actividade:</label> *@
+@*                 <select asp-for="SituacaoActividade_Sucursal" class="form-control select2" asp-items="Model.SituacaoActividades_Sucursal"> *@
+@*                     <option value="">Selecione a situação perante a actividade</option> *@
+@*                 </select> *@
+@*                 <span asp-validation-for="SituacaoActividade_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="GrupoEmpresarial_Sucursal">A entidade pertence a um grupo ou holding:</label> *@
+@*                 <select asp-for="GrupoEmpresarial_Sucursal" class="form-control select2" asp-items="Model.GrupoEmpresarials_Sucursal"> *@
+@*                     <option value="">Selecione a Opção</option> *@
+@*                 </select> *@
+@*                 <span asp-validation-for="GrupoEmpresarial_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="NomeGrupoEmpresarial_Sucursal">Nome do Grupo:</label> *@
+@*                 <input asp-for="NomeGrupoEmpresarial_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="NomeGrupoEmpresarial_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="PaisGrupoEmpresarial_Sucursal">Localização do grupo (País):</label> *@
+@*                 <input asp-for="PaisGrupoEmpresarial_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="PaisGrupoEmpresarial_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+
+@* <!-- Bloco AA2: Localização da Sucursal --> *@
+@* <div class="card mb-3"> *@
+@*     <div class="card-header text-bg-dark mb-3"> *@
+@*         AA2: LOCALIZAÇÃO DA SUCURSAL *@
+@*     </div> *@
+@*     <div class="card-body"> *@
+@*         <div class="row"> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Provincia_Sucursal">Nome da Província:</label> *@
+@*                 <input asp-for="Provincia_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Provincia_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Distrito_Sucursal">Nome do Distrito:</label> *@
+@*                 <input asp-for="Distrito_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Distrito_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Bairro_Sucursal">Nome do Bairro:</label> *@
+@*                 <input asp-for="Bairro_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Bairro_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="AvenidaRua_Sucursal">Nome da Avenida/Rua:</label> *@
+@*                 <input asp-for="AvenidaRua_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="AvenidaRua_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Numero_Sucursal">Número:</label> *@
+@*                 <input asp-for="Numero_Sucursal" class="form-control" type="number" /> *@
+@*                 <span asp-validation-for="Numero_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Latitude_Sucursal">Coordenadas geográficas: Latitude:</label> *@
+@*                 <input asp-for="Latitude_Sucursal" class="form-control" type="number" step="any" /> *@
+@*                 <span asp-validation-for="Latitude_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Longitude_Sucursal">Coordenadas geográficas: Longitude:</label> *@
+@*                 <input asp-for="Longitude_Sucursal" class="form-control" type="number" step="any" /> *@
+@*                 <span asp-validation-for="Longitude_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Referencia_Sucursal">Detalhe de proximidade:</label> *@
+@*                 <input asp-for="Referencia_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Referencia_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+
+@* <!-- Bloco AA3: Contactos da Sucursal --> *@
+@* <div class="card mb-3"> *@
+@*     <div class="card-header text-bg-dark mb-3"> *@
+@*         AA3: CONTACTOS DA SUCURSAL *@
+@*     </div> *@
+@*     <div class="card-body"> *@
+@*         <div class="row"> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Fax1_Sucursal">Telefone fixo:</label> *@
+@*                 <input asp-for="Fax1_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Fax1_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Fax2_Sucursal">Telefone fixo:</label> *@
+@*                 <input asp-for="Fax2_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Fax2_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Telemovel1_Sucursal">Telemóvel:</label> *@
+@*                 <input asp-for="Telemovel1_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Telemovel1_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Telemovel2_Sucursal">Telemóvel:</label> *@
+@*                 <input asp-for="Telemovel2_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Telemovel2_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Telemovel3_Sucursal">Telemóvel:</label> *@
+@*                 <input asp-for="Telemovel3_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Telemovel3_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Email_Sucursal">E-mail:</label> *@
+@*                 <input asp-for="Email_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Email_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="Website_Sucursal">Website:</label> *@
+@*                 <input asp-for="Website_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="Website_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+
+@* <!-- Bloco AA4: Responsável da Sucursal --> *@
+@* <div class="card mb-3"> *@
+@*     <div class="card-header text-bg-dark mb-3"> *@
+@*         AA4: RESPONSÁVEL DA SUCURSAL *@
+@*     </div> *@
+@*     <div class="card-body"> *@
+@*         <div class="row"> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="NomeResponsavel_Sucursal">Nome:</label> *@
+@*                 <input asp-for="NomeResponsavel_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="NomeResponsavel_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="FuncaoResponsavel_Sucursal">Função/Cargo:</label> *@
+@*                 <input asp-for="FuncaoResponsavel_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="FuncaoResponsavel_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="TelemovelResponsavel_Sucursal">Telemóvel:</label> *@
+@*                 <input asp-for="TelemovelResponsavel_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="TelemovelResponsavel_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*             <div class="form-group col-md-3"> *@
+@*                 <label asp-for="EmailResponsavel_Sucursal">E-mail:</label> *@
+@*                 <input asp-for="EmailResponsavel_Sucursal" class="form-control" /> *@
+@*                 <span asp-validation-for="EmailResponsavel_Sucursal" class="text-danger"></span> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+
+
+@* @section Scripts { *@
+@*     @{ *@
+@*         await Html.RenderPartialAsync("_ValidationScriptsPartial"); *@
+@*     } *@
+@*     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
+@*     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+@* } *@
