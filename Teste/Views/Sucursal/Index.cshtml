@@ -1,8 +1,52 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Sede - Lista";
+﻿@model IEnumerable<Teste.Models.Sucursal>
+
+@{
+    ViewData["Title"] = "Sucursais";
 }
 
-<h2>Cadastro realizado com sucesso</h2>
-<p>A sucursal foi cadastrada com êxito.</p>
-<a class="btn btn-primary" asp-action="Create">Nova Sucursal</a>
+<h2 class="mb-4">Lista de Sucursais</h2>
+
+<table class="table table-bordered table-hover table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Sigla</th>
+            <th>NUIT</th>
+            <th>Empresa</th>
+            <th>Tipo de Entidade</th>
+            <th>Situação</th>
+            <th>Localização</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nome</td>
+                    <td>@item.Sigla</td>
+                    <td>@item.NUIT</td>
+                    <td>@item.EmpresaId.ToString()</td> <!-- Display related Empresa name -->
+                    <td>@item.TipoEntidade</td>
+                    <td>@item.SituacaoActividade</td>
+                    <td>@item.Localizacao?.LocalizacaoId</td> <!-- Assuming Localizacao has a Nome property -->
+                    <td class="text-center">
+                        <a asp-action="Details" asp-route-id="@item.SucursalId" class="btn btn-info btn-sm">Detalhes</a>
+                        <a asp-action="Edit" asp-route-id="@item.SucursalId" class="btn btn-warning btn-sm">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@item.SucursalId" class="btn btn-danger btn-sm">Remover</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8" class="text-center text-muted">Nenhuma sucursal registrada.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">+ Nova Sucursal</a>

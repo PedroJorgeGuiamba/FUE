@@ -14,6 +14,7 @@ builder.Services.AddScoped<ContactoService>();
 builder.Services.AddScoped<LocalizacaoService>();
 builder.Services.AddScoped<BemService>();
 builder.Services.AddScoped<ActividadeService>();
+builder.Services.AddScoped<SucursalService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

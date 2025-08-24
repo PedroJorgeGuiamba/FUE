@@ -17,19 +17,22 @@ namespace Teste.Controllers
         private readonly ContactoService _contactoService;
         private readonly FueDbContext _context;
         private readonly EmpresaService _empresaService;
+        private readonly SucursalService _sucursalService;
         
         public SucursalController(
             SedeService sedeService,
             LocalizacaoService localizacaoService,
             ContactoService contactoService,
             FueDbContext fueDbContext,
-            EmpresaService empresaService)
+            EmpresaService empresaService,
+            SucursalService sucursalService)
         {
             _sedeService = sedeService;
             _localizacaoService = localizacaoService;
             _contactoService = contactoService;
             _context = fueDbContext;
             _empresaService = empresaService;
+            _sucursalService = sucursalService;
         }
 
         [HttpGet]
@@ -143,6 +146,50 @@ namespace Teste.Controllers
             }
         }
 
+
+        public async Task<IActionResult> Index()
+        {
+            var sucursal = await _context.Sucursais.ToListAsync();
+            return View(sucursal);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var sucursal = await _sucursalService.GetByIdAsync(id);
+            if (sucursal == null) return NotFound();
+            return View(sucursal);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var sucursal = await _sucursalService.GetByIdAsync(id);
+            if (sucursal == null) return NotFound();
+            var model = new CadastroSucursalViewModel
+            {
+                // Map Empresa properties to ViewModel
+                NUIT_Sucursal = sucursal.NUIT,
+                Nome_Sucursal = sucursal.Nome,
+                Sigla_Sucursal = sucursal.Sigla,
+                NumeroAlvara_Sucursal = sucursal.NumeroAlvara,
+                AnoConstituicao_Sucursal = sucursal.AnoConstituicao,
+                DataInicioAno_Sucursal = sucursal.DataInicioAno,
+                DataInicioMes_Sucursal = sucursal.DataInicioMes,
+                NumTrabalhadoresHomens_Sucursal = sucursal.NumTrabalhadoresHomens,
+                NumTrabalhadoresMulheres_Sucursal = sucursal.NumTrabalhadoresMulheres,
+                TipoEntidade_Sucursal = sucursal.TipoEntidade
+            };
+            await PopulateDropdowns(model);
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _empresaService.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
         private async Task PopulateDropdowns(CadastroSucursalViewModel model)
         {
             model.TipoEntidades_Sucursal = await GetDropdownOptions<TipoEntidade>();

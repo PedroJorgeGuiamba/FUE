@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Teste.Models
 {
     public class Sede
-{
+    {
         [Key]
         public int Id { get; set; }
 
