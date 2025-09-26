@@ -36,25 +36,38 @@ namespace Teste.ViewModels
         public string? Email_Sucursal { get; set; }
         public string? Website_Sucursal { get; set; }
 
-        // Bloco AA4 - Responsável do Estabelecimento/Sucursal
-        public string? NomeResponsavel_Sucursal { get; set; }
-        public string? FuncaoResponsavel_Sucursal { get; set; }
-        public string? TelemovelResponsavel_Sucursal { get; set; }
-        public string? EmailResponsavel_Sucursal { get; set; }
+        //// Bloco AA4 - Responsável do Estabelecimento/Sucursal
+        //public string? NomeResponsavel_Sucursal { get; set; }
+        //public string? FuncaoResponsavel_Sucursal { get; set; }
+        //public string? TelemovelResponsavel_Sucursal { get; set; }
+        //public string? EmailResponsavel_Sucursal { get; set; }
+
+        // AA4: INFORMAÇÃO SOBRE A GESTÃO DO ESTABELECIMENTO OU SUCURSAL 
+
+        [Required(ErrorMessage = "Nacionalidade do Gerente ou equivalente é obrigatório.")]
+        public string NacionalidadeGestor_Sucursal { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Género do Gerente ou equivalente é obrigatória.")]
+        public string GeneroGestor_Sucursal { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Idade do Gerente ou equivalente é obrigatório.")]
+        public int IdadeGestor_Sucursal { get; set; }
 
         // Bloco BB1 - Caracterização do Estabelecimento/Sucursal
         public int? NumTrabalhadoresHomens_Sucursal { get; set; }
         public int? NumTrabalhadoresMulheres_Sucursal { get; set; }
-        public string? TipoEntidade_Sucursal { get; set; }
+        public string? TipoEntidade_Sucursal { get; set; } = "Sucursal";
         public string? SituacaoActividade_Sucursal { get; set; }
-        public string? GrupoEmpresarial_Sucursal { get; set; }
-        public string? NomeGrupoEmpresarial_Sucursal { get; set; }
-        public string? PaisGrupoEmpresarial_Sucursal { get; set; }
-        public IEnumerable<SelectListItem> TipoEntidades_Sucursal { get; set; } = new List<SelectListItem>();
+        [Required(ErrorMessage = "Selecione uma Actividade")]
+        public int ActividadePrincipalId { get; set; }
+        public List<SelectListItem> Actividades { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> Meses { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> Provincias { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> GrupoEmpresarials_Sucursal { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> SituacaoActividades_Sucursal { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> GeneroGestores { get; set; } = new List<SelectListItem>();
 
-       
+
 
     }
 }

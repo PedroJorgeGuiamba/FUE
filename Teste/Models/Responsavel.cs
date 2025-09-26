@@ -24,11 +24,5 @@ namespace Teste.Models
 
         [ForeignKey("SedeId")]
         public Sede Sede { get; set; } = null!;
-        //public string Nome { get; set; }
-        //public string Funcao { get; set; }
-        //public string Telemovel { get; set; }
-        //public string Email { get; set; }
-        //public int SedeId { get; set; } // chave estrangeira
-        //public Sede Sede { get; set; }
     }
 }

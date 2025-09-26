@@ -6,7 +6,7 @@
 
 }
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 
 <h2>
     FORMULÁRIO DE CADASTRO E ACTUALIZAÇÃO DE DADOS DAS EMPRESAS E
@@ -16,6 +16,7 @@
 <hr />
 
 <form asp-controller="Sede" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <!-- Bloco A1: Identificação da Entidade -->
@@ -57,7 +58,9 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label asp-for="DataInicioMes">Data de início de actividade - Mês:</label>
-                    <input asp-for="DataInicioMes" class="form-control" type="number" min="1" max="12" />
+                    <select asp-for="DataInicioMes" asp-items="Model.Meses" class="form-control">
+                        <option value="">Selecione o mês</option>
+                    </select>
                     <span asp-validation-for="DataInicioMes" class="text-danger"></span>
                 </div>
             </div>
@@ -73,7 +76,9 @@
             <div class="row">
                 <div class="form-group col-md-3">
                     <label asp-for="Provincia">Nome da Província:</label>
-                    <input asp-for="Provincia" class="form-control" />
+                    <select asp-for="Provincia" asp-items="Model.Provincias" class="form-control">
+                        <option value="">Selecione a província</option>
+                    </select>
                     <span asp-validation-for="Provincia" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-3">
@@ -156,6 +161,33 @@
                     <label asp-for="Website">Website:</label>
                     <input asp-for="Website" class="form-control" />
                     <span asp-validation-for="Website" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bloco A4: Responsável pelo Preenchimento -->
+    <div class="card mb-3"> 
+        <div class="card-header text-bg-dark mb-3">
+            A4: INFORMAÇÃO SOBRE A GESTÃO DA ENTIDADE
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label asp-for="NacionalidadeGestor">Nacionalidade do Gerente ou equivalente:</label>
+                    <input asp-for="NacionalidadeGestor" class="form-control" />
+                    <span asp-validation-for="NacionalidadeGestor" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="GeneroGestor">Género do Gerente ou equivalente:</label>
+                    <select asp-for="GeneroGestor" class="form-control select2" asp-items="Model.GeneroGestores">
+                        <option value="">Selecione o Genero do Gerente</option>
+                    </select>
+                    <span asp-validation-for="FuncaoResponsavel" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="IdadeGestor">Idade:</label>
+                    <input asp-for="IdadeGestor" class="form-control" />
+                    <span asp-validation-for="IdadeGestor" class="text-danger"></span>
                 </div>
             </div>
         </div>
@@ -260,6 +292,63 @@
         </div>
     </div>
 
+    <!-- Bloco B2: Actividades e Bens -->
+     
+
+    <div class="card mb-3"> 
+         <div class="card-header text-bg-dark mb-3">
+            B2: NEGÓCIOS OU ACTIVIDADES DA ENTIDADE
+         </div> 
+         <div class="card-body"> 
+             <div class="row">
+
+                <div class="form-group col-md-6">
+                    <label asp-for="ActividadePrincipalId" class="control-label">Actividade Principal</label>
+                    <select asp-for="ActividadePrincipalId" asp-items="ViewBag.Actividades" class="form-control">
+                        <option value="">Selecione uma Actividade</option>
+                    </select>
+                    <span asp-validation-for="ActividadePrincipalId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="BemPrincipalId" class="control-label">Bem Principal</label>
+                    <select asp-for="BemPrincipalId" asp-items="ViewBag.Bens" class="form-control">
+                        <option value="">Selecione um Bem</option>
+                    </select>
+                    <span asp-validation-for="BemPrincipalId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="ActividadesSecundariasIds" class="control-label">
+                        Actividades Secundárias (opcional) - Empresas que exerçam outras actividades
+                    </label>
+                    <select asp-for="ActividadesSecundariasIds" asp-items="Model.TodasActividades"
+                            class="form-control" multiple size="4">
+                        <option value="">Selecione as actividades secundárias</option>
+                    </select>
+                    <small class="form-text text-muted">
+                        Mantenha CTRL pressionado para selecionar múltiplas actividades
+                    </small>
+                    <span asp-validation-for="ActividadesSecundariasIds" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="BensSecundariosIds" class="control-label">
+                        Bens Secundários (opcional) - Empresas que possuam outros bens ou serviços
+                    </label>
+                    <select asp-for="BensSecundariosIds" asp-items="Model.TodosBens"
+                            class="form-control" multiple size="4">
+                        <option value="">Selecione as bens secundários</option>
+                    </select>
+                    <small class="form-text text-muted">
+                        Mantenha CTRL pressionado para selecionar múltiplos bens ou serviços
+                    </small>
+                    <span asp-validation-for="BensSecundariosIds" class="text-danger"></span>
+                </div>
+             </div> 
+         </div> 
+     </div> 
+
     <!-- Bloco B3: Informação Econômico-Financeira -->
     <div class="card mb-3">
         <div class="card-header text-bg-dark mb-3">
@@ -347,15 +436,111 @@
     }
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
-    <script src="@Url.Content("~/js/atividade-autocomplete.js")"></script>
-    <script src="@Url.Content("~/js/bem-autocomplete.js")"></script>
-    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
     <script>
         $(document).ready(function () {
+            // Outros dropdowns
+            $('#TipoEntidade, #FormaJuridica').select2({
+                placeholder: 'Selecione uma opção',
+                allowClear: true
+            });
+
             @if (TempData["SuccessMessage"] != null)
             {
-                @: $('#successModal').modal('show');
+                    @: $('#successModal').modal('show');
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#ActividadesSecundariasIds').removeAttr('data-val');
+            // Melhoria para o dropdown múltiplo
+            $('#ActividadesSecundariasIds').on('change', function() {
+                var selectedPrincipal = $('#ActividadePrincipalId').val();
+                var $secondarySelect = $(this);
+
+                // Remove a atividade principal da lista de secundárias se estiver selecionada
+                if (selectedPrincipal) {
+                    $secondarySelect.find('option[value="' + selectedPrincipal + '"]').prop('disabled', true);
+                }
+            });
+
+            // Quando a atividade principal muda, atualiza a lista de secundárias
+            $('#ActividadePrincipalId').on('change', function() {
+                var selectedPrincipal = $(this).val();
+                var $secondarySelect = $('#ActividadesSecundariasIds');
+
+                // Habilita todas as opções primeiro
+                $secondarySelect.find('option').prop('disabled', false);
+
+                // Desabilita a atividade principal selecionada
+                if (selectedPrincipal) {
+                    $secondarySelect.find('option[value="' + selectedPrincipal + '"]').prop('disabled', true);
+
+                    // Remove da seleção se estava selecionada
+                    var selectedValues = $secondarySelect.val();
+                    if (selectedValues && selectedValues.includes(selectedPrincipal)) {
+                        var newValues = selectedValues.filter(function(value) {
+                            return value !== selectedPrincipal;
+                        });
+                        $secondarySelect.val(newValues);
+                    }
+                }
+            });
+
+            // Inicializa desabilitando a atividade principal atual
+            var initialPrincipal = $('#ActividadePrincipalId').val();
+            if (initialPrincipal) {
+                $('#ActividadesSecundariasIds').find('option[value="' + initialPrincipal + '"]').prop('disabled', true);
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#BensSecundariosIds').removeAttr('data-val');
+            // Melhoria para o dropdown múltiplo
+            $('#BensSecundariosIds').on('change', function() {
+                var selectedPrincipal = $('#BemPrincipalId').val();
+                var $secondarySelect = $(this);
+
+                // Remove a atividade principal da lista de secundárias se estiver selecionada
+                if (selectedPrincipal) {
+                    $secondarySelect.find('option[value="' + selectedPrincipal + '"]').prop('disabled', true);
+                }
+            });
+
+            // Quando a atividade principal muda, atualiza a lista de secundárias
+            $('#BemPrincipalId').on('change', function() {
+                var selectedPrincipal = $(this).val();
+                var $secondarySelect = $('#BensSecundariosIds');
+
+                // Habilita todas as opções primeiro
+                $secondarySelect.find('option').prop('disabled', false);
+
+                // Desabilita a atividade principal selecionada
+                if (selectedPrincipal) {
+                    $secondarySelect.find('option[value="' + selectedPrincipal + '"]').prop('disabled', true);
+
+                    // Remove da seleção se estava selecionada
+                    var selectedValues = $secondarySelect.val();
+                    if (selectedValues && selectedValues.includes(selectedPrincipal)) {
+                        var newValues = selectedValues.filter(function(value) {
+                            return value !== selectedPrincipal;
+                        });
+                        $secondarySelect.val(newValues);
+                    }
+                }
+            });
+
+            // Inicializa desabilitando a atividade principal atual
+            var initialPrincipal = $('#BemPrincipalId').val();
+            if (initialPrincipal) {
+                $('#BensSecundariosIds').find('option[value="' + initialPrincipal + '"]').prop('disabled', true);
             }
         });
     </script>

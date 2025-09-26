@@ -28,7 +28,7 @@ namespace Teste.Services
         {
             return await _context.Bens
                 .Where(a => a.Descricao.Contains(termo) || a.CodigoCNBS.Contains(termo))
-                .Take(10)
+                //.Take(10)
                 .ToListAsync();
         }
 

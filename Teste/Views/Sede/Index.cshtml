@@ -6,6 +6,29 @@
 
 <h2 class="mb-4">Lista de Empresas</h2>
 
+<!-- Mensagens de Feedback -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+        @if (TempData["InfoMessage"] != null)
+        {
+            <br>
+    
+            <small>@TempData["InfoMessage"]</small>
+        }
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <table class="table table-bordered table-hover table-striped">
     <thead class="table-dark">
         <tr>
@@ -15,9 +38,7 @@
             <th>Tipo de Entidade</th>
             <th>Forma Jurídica</th>
             <th>Situação</th>
-            <th>Forma Juridica</th>
-            <th>Capital Social Público</th>
-            <th>Volume de Negocios</th>
+            <th>Capital Social</th>
             <th class="text-center">Ações</th>
         </tr>
     </thead>
@@ -32,14 +53,27 @@
                     <td>@item.NUIT</td>
                     <td>@item.TipoEntidade</td>
                     <td>@item.FormaJuridica</td>
-                    <td>@item.SituacaoActividade</td>
-                    <td>@item.FormaJuridica</td>
-                    <td>@item.CapitalSocialPublico</td>
-                    <td>@item.VolumeNegocios</td>
+                    <td>
+                        <span class="badge @(item.SituacaoActividade == "EmActividade" ? "bg-success" : "bg-warning")">
+                            @item.SituacaoActividade
+                        </span>
+                    </td>
+                    <td>@item.CapitalSocial.ToString("C")</td>
                     <td class="text-center">
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Detalhes</a>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editar</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Remover</a>
+                        <div class="btn-group" role="group">
+                            <a asp-action="Details" asp-route-id="@item.Id"
+                               class="btn btn-info btn-sm" title="Detalhes">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id"
+                               class="btn btn-warning btn-sm" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a asp-action="ConfirmDelete" asp-route-id="@item.Id"
+                               class="btn btn-danger btn-sm" title="Excluir">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
                     </td>
                 </tr>
             }
@@ -47,10 +81,41 @@
         else
         {
             <tr>
-                <td colspan="7" class="text-center text-muted">Nenhuma empresa registrada.</td>
+                <td colspan="8" class="text-center text-muted py-4">
+                    <i class="fas fa-building fa-2x mb-2"></i>
+                    <br>Nenhuma empresa registrada.
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a asp-action="Create" class="btn btn-primary">+ Nova Empresa</a>
+<a asp-action="Create" class="btn btn-primary">
+    <i class="fas fa-plus"></i> Nova Empresa
+</a>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Confirmação adicional para exclusão
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('a[title="Excluir"]');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const empresaName = this.closest('tr').querySelector('td:first-child').textContent;
+                    if (!confirm(`Tem certeza que deseja excluir a empresa "${empresaName.trim()}"?`)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}

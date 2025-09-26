@@ -18,6 +18,7 @@ namespace Teste.Controllers
         private readonly FueDbContext _context;
         private readonly EmpresaService _empresaService;
         private readonly SucursalService _sucursalService;
+        private readonly ActividadeService _actividadeService;
         
         public SucursalController(
             SedeService sedeService,
@@ -25,7 +26,8 @@ namespace Teste.Controllers
             ContactoService contactoService,
             FueDbContext fueDbContext,
             EmpresaService empresaService,
-            SucursalService sucursalService)
+            SucursalService sucursalService, 
+            ActividadeService actividadeService)
         {
             _sedeService = sedeService;
             _localizacaoService = localizacaoService;
@@ -33,21 +35,26 @@ namespace Teste.Controllers
             _context = fueDbContext;
             _empresaService = empresaService;
             _sucursalService = sucursalService;
+            _actividadeService = actividadeService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Create(int empresaId)
         {
+            var actividades = await _actividadeService.GetAllAsync();
             var empresa = await _empresaService.GetByIdAsync(empresaId);
             if (empresa == null) return NotFound();
 
             var model = new CadastroSucursalViewModel
             {
                 EmpresaId = empresaId,
-                TipoEntidades_Sucursal = await GetDropdownOptions<TipoEntidade>(),
                 SituacaoActividades_Sucursal = await GetDropdownOptions<SituacaoActividade>(),
-                GrupoEmpresarials_Sucursal = await GetDropdownOptions<GrupoEmpresarial>()
+                GrupoEmpresarials_Sucursal = await GetDropdownOptions<GrupoEmpresarial>(),
+                GeneroGestores = await GetDropdownOptions<GeneroGestor>(),
+                Meses = GetMesesDropdown(),
+                Provincias = GetProvinciasDropdown()
             };
+            ViewBag.Actividades = new SelectList(await _context.Actividades.ToListAsync(), "ActividadeId", "Descricao");
 
             return View(model);
         }
@@ -56,11 +63,18 @@ namespace Teste.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CadastroSucursalViewModel model)
         {
+            if (model.ActividadePrincipalId <= 0)
+            {
+                ModelState.AddModelError("ActividadePrincipalId", "Uma atividade principal deve ser selecionada.");
+            }
+
             if (!ModelState.IsValid)
             {
                 await PopulateDropdowns(model);
+                ViewBag.Actividades = new SelectList(await _context.Actividades.ToListAsync(), "ActividadeId", "Descricao", model.ActividadePrincipalId);
                 return View(model);
             }
+
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -78,11 +92,11 @@ namespace Teste.Controllers
                     Referencia = model.Referencia_Sucursal
                 };
                 _context.Localizacoes.Add(localizacao);
-                await _context.SaveChangesAsync(); // Save to get LocalizacaoId
+                await _context.SaveChangesAsync();
 
                 // 2. Save Sucursal
-                //var empresa = await _empresaService.GetByIdAsync(model.EmpresaId);
-                //if (empresa == null) return NotFound();
+                var empresa = await _empresaService.GetByIdAsync(model.EmpresaId);
+                if (empresa == null) return NotFound();
 
                 var sucursal = new Sucursal
                 {
@@ -96,7 +110,8 @@ namespace Teste.Controllers
                     LocalizacaoId = localizacao.LocalizacaoId,
                     TipoEntidade = model.TipoEntidade_Sucursal,
                     SituacaoActividade = model.SituacaoActividade_Sucursal,
-                    GrupoEmpresarial = model.GrupoEmpresarial_Sucursal,
+                    NumTrabalhadoresHomens = (int)model.NumTrabalhadoresHomens_Sucursal,
+                    NumTrabalhadoresMulheres = (int)model.NumTrabalhadoresMulheres_Sucursal,
                     Empresa = _context.Empresas.Find(model.EmpresaId),
                     EmpresaId = model.EmpresaId
                 };
@@ -113,32 +128,70 @@ namespace Teste.Controllers
                     Telemovel3 = model.Telemovel3_Sucursal,
                     Email = model.Email_Sucursal,
                     Website = model.Website_Sucursal,
-                    SedeId = sucursal.Id // Will be set after SaveChanges
+                    SedeId = sucursal.Id
                 };
                 _context.Contactos.Add(contacto);
                 _context.SaveChanges();
 
-                // 4. Save Responsible
-                var responsavel = new Responsavel
+
+                var gestorEmpresa = new Gestor
                 {
-                    SedeId = sucursal.Id, // Will be set after SaveChanges
-                    Nome = model.NomeResponsavel_Sucursal,
-                    Funcao = model.FuncaoResponsavel_Sucursal,
-                    Telemovel = model.TelemovelResponsavel_Sucursal,
-                    Email = model.EmailResponsavel_Sucursal
+                    Genero = model.GeneroGestor_Sucursal,
+                    Nacionalidade = model.NacionalidadeGestor_Sucursal,
+                    Idade = model.IdadeGestor_Sucursal,
+                    SedeId = sucursal.Id
                 };
-                _context.Responsaveis.Add(responsavel);
+                _context.Gestores.Add(gestorEmpresa);
+                await _context.SaveChangesAsync();
 
-                await _context.SaveChangesAsync(); // Save to generate Ids for Sucursal, Contacto, and Responsavel
-                 await transaction.CommitAsync();
+                //var actividadePrincipalExists = await _context.Actividades.AnyAsync(a => a.ActividadeId == model.ActividadePrincipalId_Sucursal);
+                //if (!actividadePrincipalExists)
+                //{
+                //    ModelState.AddModelError("ActividadePrincipalId_Sucursal", "A atividade principal selecionada não existe.");
+                //    await transaction.RollbackAsync();
+                //    await PopulateDropdownsAfterError(model);
+                //    return View(model);
+                //}
 
+
+                //// 6. Salva a ActividadeEmpresa
+                //var actividadeEmpresa = new ActividadeEmpresa
+                //{
+                //    EmpresaId = sucursal.Id,
+                //    ActividadeId = model.ActividadePrincipalId_Sucursal,
+                //    Tipo = "Principal"
+                //};
+                //_context.Add(actividadeEmpresa);
+                //await _context.SaveChangesAsync();
+
+                var actividadePrincipalExists = await _context.Actividades.AnyAsync(a => a.ActividadeId == model.ActividadePrincipalId);
+                if (!actividadePrincipalExists)
+                {
+                    ModelState.AddModelError("ActividadePrincipalId", "A atividade principal selecionada não existe.");
+                    await transaction.RollbackAsync();
+                    await PopulateDropdownsAfterError(model);
+                    return View(model);
+                }
+
+
+                //// 6. Salva a ActividadeEmpresa
+                var actividadeEmpresa = new ActividadeEmpresa
+                {
+                    EmpresaId = empresa.Id,
+                    ActividadeId = model.ActividadePrincipalId,
+                    Tipo = "Principal"
+                };
+                _context.Add(actividadeEmpresa);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
                 TempData["SuccessMessage"] = "Sucursal cadastrada com sucesso!";
 
                 return RedirectToAction("Details", "Sede", new { id = model.EmpresaId });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving sucursal: {ex.Message}"); // Replace with proper logging
+                //    Console.WriteLine($"Error saving sucursal: {ex.Message}");
                 await transaction.RollbackAsync();
                 ModelState.AddModelError(string.Empty, "Erro ao gravar os dados. Tente novamente ou contate o suporte.");
                 await PopulateDropdowns(model);
@@ -192,9 +245,21 @@ namespace Teste.Controllers
         }
         private async Task PopulateDropdowns(CadastroSucursalViewModel model)
         {
-            model.TipoEntidades_Sucursal = await GetDropdownOptions<TipoEntidade>();
+            //model.TipoEntidades_Sucursal = await GetDropdownOptions<TipoEntidade>();
             model.SituacaoActividades_Sucursal = await GetDropdownOptions<SituacaoActividade>();
             model.GrupoEmpresarials_Sucursal = await GetDropdownOptions<GrupoEmpresarial>();
+            model.GeneroGestores = await GetDropdownOptions<GeneroGestor>();
+            model.Provincias = GetProvinciasDropdown();
+            model.Meses = GetMesesDropdown();
+        }
+
+        private async Task PopulateDropdownsAfterError(CadastroSucursalViewModel model)
+        {
+            await PopulateDropdowns(model);
+
+            var actividades = await _actividadeService.GetAllAsync();
+
+            ViewBag.Actividades = new SelectList(await _context.Actividades.ToListAsync(), "ActividadeId", "Descricao", model.ActividadePrincipalId);
         }
 
         private async Task<IEnumerable<SelectListItem>> GetDropdownOptions<T>() where T : Enum
@@ -207,5 +272,72 @@ namespace Teste.Controllers
                     Text = e.ToString()
                 });
         }
+
+        private List<SelectListItem> GetMesesDropdown()
+        {
+            return Enum.GetValues(typeof(Mes))
+                .Cast<Mes>()
+                .Select(m => new SelectListItem
+                {
+                    Value = ((int)m).ToString(),
+                    Text = m.ToString()
+                })
+                .ToList();
+        }
+
+        private List<SelectListItem> GetProvinciasDropdown()
+        {
+            return Enum.GetValues(typeof(Provincia))
+                .Cast<Provincia>()
+                .Select(p => new SelectListItem
+                {
+                    Value = p.ToString(),
+                    Text = FormatProvinciaName(p.ToString())
+                })
+                .ToList();
+        }
+
+        private string FormatProvinciaName(string provinciaName)
+        {
+            // Formata os nomes para ficarem mais legíveis
+            return provinciaName switch
+            {
+                "MaputoCidade" => "Cidade de Maputo",
+                "MaputoProvincia" => "Província de Maputo",
+                "CaboDelgado" => "Cabo Delgado",
+                _ => provinciaName
+            };
+        }
+
+        public enum Mes
+        {
+            Janeiro = 1,
+            Fevereiro = 2,
+            Marco = 3,
+            Abril = 4,
+            Maio = 5,
+            Junho = 6,
+            Julho = 7,
+            Agosto = 8,
+            Setembro = 9,
+            Outubro = 10,
+            Novembro = 11,
+            Dezembro = 12
+        }
+        public enum Provincia
+        {
+            MaputoCidade,
+            MaputoProvincia,
+            Gaza,
+            Inhambane,
+            Sofala,
+            Manica,
+            Tete,
+            Zambezia,
+            Nampula,
+            CaboDelgado,
+            Niassa
+        }
+
     }
 }

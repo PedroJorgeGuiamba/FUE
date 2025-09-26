@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using Teste.Controllers;
 
 namespace Teste.ViewModels
 {
@@ -70,7 +71,17 @@ namespace Teste.ViewModels
 
         public string? Website { get; set; }
 
-        // Bloco A4 - Responsável pelo Preenchimento
+        //Bloco A4 - Informação sobre a gestão da entidade
+        [Required(ErrorMessage = "Nacionalidade do Gerente ou equivalente é obrigatório.")]
+        public string NacionalidadeGestor { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Género do Gerente ou equivalente é obrigatória.")]
+        public string GeneroGestor { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Idade do Gerente ou equivalente é obrigatório.")]
+        public int IdadeGestor { get; set; }
+
+        //Bloco A5 - Responsável pelo Preenchimento
         [Required(ErrorMessage = "Nome do Responsável é obrigatório.")]
         public string NomeResponsavel { get; set; } = string.Empty;
 
@@ -109,6 +120,19 @@ namespace Teste.ViewModels
         [Required(ErrorMessage = "Tipo de Contabilidade é obrigatório.")]
         public string TipoContabilidade { get; set; } = string.Empty;
 
+        //Bloco B2 - NEGÓCIOS OU ACTIVIDADES DA ENTIDADE
+        [Required(ErrorMessage = "Selecione uma Actividade")]
+        public int ActividadePrincipalId { get; set; }
+        public List<SelectListItem> Actividades { get; set; } = new List<SelectListItem>();
+        [Required(ErrorMessage = "Selecione um Bem")]
+        public int BemPrincipalId { get; set; }
+        public List<SelectListItem> Bens { get; set; } = new List<SelectListItem>();
+        public List<int>? ActividadesSecundariasIds { get; set; } = new List<int>();
+        public List<SelectListItem> TodasActividades { get; set; } = new List<SelectListItem>();
+        public List<int>? BensSecundariosIds { get; set; } = new List<int>();
+        public List<SelectListItem> TodosBens { get; set; } = new List<SelectListItem>();
+
+        //Bloco B3 - Dados Financeiros da Entidade
         [Range(0, double.MaxValue, ErrorMessage = "Volume de Negócios deve ser maior ou igual a 0.")]
         public double VolumeNegocios { get; set; }
 
@@ -128,12 +152,15 @@ namespace Teste.ViewModels
         public double CapitalPrivadoEstrangeiro { get; set; }
 
         // Dropdown Lists
+        public IEnumerable<SelectListItem> Meses { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> Provincias { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> SucursalNosPaises { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> TipoEntidades { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> FormaJuridicas { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> SituacaoActividades { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> GrupoEmpresarials { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> TipoContabilidades { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> GeneroGestores { get; set; } = new List<SelectListItem>();
 
 
 

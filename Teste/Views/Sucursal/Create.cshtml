@@ -53,39 +53,10 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label asp-for="DataInicioMes_Sucursal">Data de início de actividade - Mês:</label>
-                    <input asp-for="DataInicioMes_Sucursal" class="form-control" type="number" min="1" max="12" />
+                    <select asp-for="DataInicioMes_Sucursal" asp-items="Model.Meses" class="form-control">
+                        <option value="">Selecione o mês</option>
+                    </select>
                     <span asp-validation-for="DataInicioMes_Sucursal" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="TipoEntidade_Sucursal">Diga se esta entidade é:</label>
-                    <select asp-for="TipoEntidade_Sucursal" class="form-control select2" asp-items="Model.TipoEntidades_Sucursal">
-                        <option value="">Selecione o tipo de entidade</option>
-                    </select>
-                    <span asp-validation-for="TipoEntidade_Sucursal" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="SituacaoActividade_Sucursal">Situação perante actividade:</label>
-                    <select asp-for="SituacaoActividade_Sucursal" class="form-control select2" asp-items="Model.SituacaoActividades_Sucursal">
-                        <option value="">Selecione a situação perante a actividade</option>
-                    </select>
-                    <span asp-validation-for="SituacaoActividade_Sucursal" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="GrupoEmpresarial_Sucursal">A entidade pertence a um grupo ou holding:</label>
-                    <select asp-for="GrupoEmpresarial_Sucursal" class="form-control select2" asp-items="Model.GrupoEmpresarials_Sucursal">
-                        <option value="">Selecione a Opção</option>
-                    </select>
-                    <span asp-validation-for="GrupoEmpresarial_Sucursal" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="NomeGrupoEmpresarial_Sucursal">Nome do Grupo:</label>
-                    <input asp-for="NomeGrupoEmpresarial_Sucursal" class="form-control" />
-                    <span asp-validation-for="NomeGrupoEmpresarial_Sucursal" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="PaisGrupoEmpresarial_Sucursal">Localização do grupo (País):</label>
-                    <input asp-for="PaisGrupoEmpresarial_Sucursal" class="form-control" />
-                    <span asp-validation-for="PaisGrupoEmpresarial_Sucursal" class="text-danger"></span>
                 </div>
             </div>
         </div>
@@ -100,7 +71,9 @@
             <div class="row">
                 <div class="form-group col-md-3">
                     <label asp-for="Provincia_Sucursal">Nome da Província:</label>
-                    <input asp-for="Provincia_Sucursal" class="form-control" />
+                    <select asp-for="Provincia_Sucursal" asp-items="Model.Provincias" class="form-control">
+                        <option value="">Selecione a província</option>
+                    </select>
                     <span asp-validation-for="Provincia_Sucursal" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-3">
@@ -189,7 +162,7 @@
     </div>
 
     <!-- Bloco AA4: Responsável da Sucursal -->
-    <div class="card mb-3">
+    @* <div class="card mb-3">
         <div class="card-header text-bg-dark mb-3">
             AA4: RESPONSÁVEL DA SUCURSAL
         </div>
@@ -217,6 +190,97 @@
                 </div>
             </div>
         </div>
+    </div> *@
+
+    <!-- Bloco A4: Responsável pelo Preenchimento -->
+    <div class="card mb-3">
+        <div class="card-header text-bg-dark mb-3">
+            A4: INFORMAÇÃO SOBRE A GESTÃO DA ENTIDADE
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label asp-for="NacionalidadeGestor_Sucursal">Nacionalidade do Gerente ou equivalente:</label>
+                    <input asp-for="NacionalidadeGestor_Sucursal" class="form-control" />
+                    <span asp-validation-for="NacionalidadeGestor_Sucursal" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="GeneroGestor_Sucursal">Género do Gerente ou equivalente:</label>
+                    <select asp-for="GeneroGestor_Sucursal" class="form-control select2" asp-items="Model.GeneroGestores">
+                        <option value="">Selecione o Genero do Gerente</option>
+                    </select>
+                    <span asp-validation-for="GeneroGestor_Sucursal" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="IdadeGestor_Sucursal">Idade:</label>
+                    <input asp-for="IdadeGestor_Sucursal" class="form-control" />
+                    <span asp-validation-for="IdadeGestor_Sucursal" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header text-bg-dark mb-3">
+            BB1: CARACTERIZAÇÃO DO ESTABELECIMENTO OU SUCURSAL
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label asp-for="TipoEntidade_Sucursal">Diga se esta entidade é:</label>
+                    <input asp-for="TipoEntidade_Sucursal" class="form-control" value="Sucursal" readonly />
+                    <span asp-validation-for="TipoEntidade_Sucursal" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="SituacaoActividade_Sucursal">Situação perante actividade:</label>
+                    <select asp-for="SituacaoActividade_Sucursal" class="form-control select2" asp-items="Model.SituacaoActividades_Sucursal">
+                        <option value="">Selecione a situação perante a actividade</option>
+                    </select>
+                    <span asp-validation-for="SituacaoActividade_Sucursal" class="text-danger"></span>
+                </div>
+                @* <div class="form-group col-md-3">
+                    <label asp-for="GrupoEmpresarial_Sucursal">A entidade pertence a um grupo ou holding:</label>
+                    <select asp-for="GrupoEmpresarial_Sucursal" class="form-control select2" asp-items="Model.GrupoEmpresarials_Sucursal">
+                        <option value="">Selecione a Opção</option>
+                    </select>
+                    <span asp-validation-for="GrupoEmpresarial_Sucursal" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="NomeGrupoEmpresarial_Sucursal">Nome do Grupo:</label>
+                    <input asp-for="NomeGrupoEmpresarial_Sucursal" class="form-control" />
+                    <span asp-validation-for="NomeGrupoEmpresarial_Sucursal" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="PaisGrupoEmpresarial_Sucursal">Localização do grupo (País):</label>
+                    <input asp-for="PaisGrupoEmpresarial_Sucursal" class="form-control" />
+                    <span asp-validation-for="PaisGrupoEmpresarial_Sucursal" class="text-danger"></span>
+                </div> *@
+                @* <div class="form-group col-md-6">
+                    <label asp-for="ActividadePrincipalId_Sucursal" class="control-label">Actividade Principal</label>
+                    <select asp-for="ActividadePrincipalId_Sucursal" asp-items="ViewBag.Actividades" class="form-control">
+                        <option value="">Selecione uma Actividade</option>
+                    </select>
+                    <span asp-validation-for="ActividadePrincipalId_Sucursal" class="text-danger"></span>
+                </div> *@
+                <div class="form-group col-md-6">
+                    <label asp-for="ActividadePrincipalId" class="control-label">Actividade Principal</label>
+                    <select asp-for="ActividadePrincipalId" asp-items="ViewBag.Actividades" class="form-control">
+                        <option value="">Selecione uma Actividade</option>
+                    </select>
+                    <span asp-validation-for="ActividadePrincipalId" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="NumTrabalhadoresHomens_Sucursal">Número de trabalhadores: Homens:</label>
+                    <input asp-for="NumTrabalhadoresHomens_Sucursal" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="NumTrabalhadoresHomens_Sucursal" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="NumTrabalhadoresMulheres_Sucursal">Número de trabalhadores: Mulheres:</label>
+                    <input asp-for="NumTrabalhadoresMulheres_Sucursal" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="NumTrabalhadoresMulheres_Sucursal" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
@@ -235,4 +299,27 @@
     }
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        // Exibir detalhes do erro no console para debugging
+        $(document).ready(function() {
+            // Log de erros de validação
+            $('form').on('submit', function() {
+                console.log('Formulário submetido');
+                var errors = $('.field-validation-error');
+                if (errors.length > 0) {
+                    console.log('Erros de validação encontrados:');
+                    errors.each(function() {
+                        console.log('- ' + $(this).text());
+                    });
+                }
+            });
+
+            // Auto-focus no primeiro campo com erro
+            var firstError = $('.input-validation-error').first();
+            if (firstError.length > 0) {
+                firstError.focus();
+            }
+        });
+    </script>
 }

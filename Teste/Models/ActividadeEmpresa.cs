@@ -1,15 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Teste.Models
 {
     public class ActividadeEmpresa
     {
+        [Required]
         public int EmpresaId { get; set; }
-        public Empresa Empresa { get; set; }
-        public int ActividadeId { get; set; }
-        public Actividade Actividade { get; set; }
-        public string Tipo { get; set; } = string.Empty;
 
+        [ForeignKey("EmpresaId")]
+        public Empresa Empresa { get; set; } = null!;
+
+        [Required]
+        public int ActividadeId { get; set; }
+
+        [ForeignKey("ActividadeId")]
+        public Actividade Actividade { get; set; } = null!;
+
+        [Required]
+        public string Tipo { get; set; } = string.Empty;
     }
 }

@@ -30,16 +30,6 @@ namespace Teste.Models
 
         [Range(0, 100, ErrorMessage = "Capital Privado Estrangeiro deve estar entre 0 e 100.")]
         public double CapitalPrivadoEstrangeiro { get; set; }
-        //public string SucursalNoPais { get; set; } = string.Empty;
-        //public int QuantidadeSucursalNoPais { get; set; }
-        //public string TipoContabilidade { get; set; } = string.Empty;
-        //public string FormaJuridica { get; set; } = string.Empty;
-        //public double VolumeNegocios { get; set; } 
-        //public double Despesas { get; set; }
-        //public double CapitalSocial { get; set; }
-        //public double CapitalSocialPublico { get; set; }
-        //public double CapitalPrivadoNacional { get; set; }
-        //public double CapitalPrivadoEstrangeiro { get; set; }
         public ICollection<Sucursal> Sucursais { get; set; } = new List<Sucursal>();
         public ICollection<ActividadeEmpresa> Actividades { get; set; } = new List<ActividadeEmpresa>();
         public ICollection<EmpresaBem> Bens { get; set; } = new List<EmpresaBem>();

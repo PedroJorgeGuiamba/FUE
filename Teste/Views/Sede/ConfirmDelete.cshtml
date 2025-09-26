@@ -1,0 +1,85 @@
+﻿@model dynamic
+
+@{
+    var isSede = ViewBag.EntityType == "Sede";
+    var entity = ViewBag.Entity;
+    var entityName = isSede ? "Sede" : "Empresa";
+    ViewData["Title"] = $"Confirmar Exclusão de {entityName}";
+}
+
+<h2 class="text-danger">Confirmar Exclusão</h2>
+
+<div class="alert alert-warning">
+    <h4>Tem certeza que deseja excluir esta @entityName?</h4>
+    <p>Esta ação não pode ser desfeita e removerá todos os registros relacionados.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>@entityName: @entity.Nome</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">NUIT:</dt>
+            <dd class="col-sm-9">@entity.NUIT</dd>
+
+            <dt class="col-sm-3">Sigla:</dt>
+            <dd class="col-sm-9">@entity.Sigla</dd>
+
+            @if (isSede)
+            {
+                <dt class="col-sm-3">Tipo de Entidade:</dt>
+                <dd class="col-sm-9">@entity.TipoEntidade</dd>
+            }
+        </dl>
+
+        @if (ViewBag.ActividadesCount > 0 || ViewBag.BensCount > 0 || ViewBag.SucursaisCount > 0 ||
+                (isSede && (ViewBag.ContactosCount > 0 || ViewBag.ResponsaveisCount > 0 || ViewBag.GestoresCount > 0)))
+        {
+            <div class="alert alert-info">
+                <h6>Serão também excluídos:</h6>
+                <ul>
+                    @if (ViewBag.ActividadesCount > 0)
+                    {
+                        <li>@ViewBag.ActividadesCount actividade(s) associada(s)</li>
+                    }
+                    @if (ViewBag.BensCount > 0)
+                    {
+                        <li>@ViewBag.BensCount bem(ns) associado(s)</li>
+                    }
+                    @if (ViewBag.SucursaisCount > 0)
+                    {
+                        <li>@ViewBag.SucursaisCount sucursal(is)</li>
+                    }
+                    @if (isSede)
+                    {
+                        @if (ViewBag.ContactosCount > 0)
+                        {
+                            <li>@ViewBag.ContactosCount contacto(s)</li>
+                        }
+                        @if (ViewBag.ResponsaveisCount > 0)
+                        {
+                            <li>@ViewBag.ResponsaveisCount responsável(eis)</li>
+                        }
+                        @if (ViewBag.GestoresCount > 0)
+                        {
+                            <li>@ViewBag.GestoresCount gestor(e)s</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+<form asp-action="Delete" method="post" class="mt-3">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@entity.Id" />
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Confirmar Exclusão
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>

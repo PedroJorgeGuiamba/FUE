@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Threading.Tasks;
 
 namespace Teste.Controllers
 {
@@ -26,7 +27,7 @@ namespace Teste.Controllers
             FueDbContext fueDbContext,
             ActividadeService actividadeService,
             SedeService sedeService,
-            BemService bemService, 
+            BemService bemService,
             EmpresaService empresaService
             )
         {
@@ -42,16 +43,35 @@ namespace Teste.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+            var actividades = await _actividadeService.GetAllAsync();
+            var bens = await _bemService.GetAllAsync();
+
             var model = new CadastroEmpresaViewModel
             {
                 TipoEntidades = await GetDropdownOptions<TipoEntidade>(),
-                FormaJuridicas = await GetDropdownOptions<FormaJuridica>(),
                 SituacaoActividades = await GetDropdownOptions<SituacaoActividade>(),
                 GrupoEmpresarials = await GetDropdownOptions<GrupoEmpresarial>(),
                 SucursalNosPaises = await GetDropdownOptions<SucursalNoPais>(),
-                TipoContabilidades = await GetDropdownOptions<TipoContabilidade>()
-               
+                TipoContabilidades = await GetDropdownOptions<TipoContabilidade>(),
+                GeneroGestores = await GetDropdownOptions<GeneroGestor>(),
+                FormaJuridicas = GetFormaJuridicaDropdown(),
+                Meses = GetMesesDropdown(),
+                Provincias = GetProvinciasDropdown(),
+
+                TodasActividades = actividades.Select(a => new SelectListItem
+                {
+                    Value = a.ActividadeId.ToString(),
+                    Text = $"{a.CodigoCAE} - {a.Descricao}"
+                }).ToList(),
+                TodosBens = bens.Select(b => new SelectListItem
+                {
+                    Value = b.BemId.ToString(),
+                    Text = $"{b.CodigoCNBS} - {b.Descricao}"
+                }).ToList()
             };
+
+            ViewBag.Actividades = new SelectList(await _context.Actividades.ToListAsync(), "ActividadeId", "Descricao");
+            ViewBag.Bens = new SelectList(await _context.Bens.ToListAsync(), "BemId", "Descricao");
 
             return View(model);
         }
@@ -60,34 +80,48 @@ namespace Teste.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CadastroEmpresaViewModel model)
         {
-            // Validate capital percentages
+            model.ActividadesSecundariasIds ??= new List<int>();
+            model.BensSecundariosIds ??= new List<int>();
+            // Valida os percentuais de capital
             if (Math.Abs(model.CapitalSocialPublico + model.CapitalPrivadoNacional + model.CapitalPrivadoEstrangeiro - 100.0) > 0.01)
             {
                 ModelState.AddModelError("TotalCapitalPercentages", "A soma dos percentuais de capital deve ser igual a 100%.");
             }
 
-            if (!ModelState.IsValid)
+            // Valida os IDs de Actividade e Bem
+            if (model.ActividadePrincipalId <= 0)
             {
-                await PopulateDropdowns(model);
-                return View(model);
+                ModelState.AddModelError("ActividadePrincipalId", "Uma atividade principal deve ser selecionada.");
+            }
+            if (model.BemPrincipalId <= 0)
+            {
+                ModelState.AddModelError("BemPrincipalId", "Um bem ou serviço principal deve ser selecionado.");
             }
 
-           
             if (!ModelState.IsValid)
             {
                 await PopulateDropdowns(model);
-                return Json(new
-                {
-                    success = false,
-                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage),
-                    partialView = await this.RenderViewToStringAsync("Create", model)
-                });
+                model.TodasActividades = (await _actividadeService.GetAllAsync())
+                   .Select(a => new SelectListItem
+                   {
+                       Value = a.ActividadeId.ToString(),
+                       Text = $"{a.CodigoCAE} - {a.Descricao}"
+                   }).ToList();
+                model.TodosBens= (await _bemService.GetAllAsync())
+                  .Select(b => new SelectListItem
+                  {
+                      Value = b.BemId.ToString(),
+                      Text = $"{b.CodigoCNBS} - {b.Descricao}"
+                  }).ToList();
+                ViewBag.Actividades = new SelectList(await _context.Actividades.ToListAsync(), "ActividadeId", "Descricao", model.ActividadePrincipalId);
+                ViewBag.Bens = new SelectList(await _context.Bens.ToListAsync(), "BemId", "Descricao", model.BemPrincipalId);
+                return View(model);
             }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // 1. Save Location
+                // 1. Salva a Localização
                 var localizacao = new Localizacao
                 {
                     Provincia = model.Provincia,
@@ -102,7 +136,7 @@ namespace Teste.Controllers
                 _context.Localizacoes.Add(localizacao);
                 await _context.SaveChangesAsync();
 
-                // 2. Save Empresa
+                // 2. Salva a Empresa
                 var empresa = new Empresa
                 {
                     NUIT = model.NUIT,
@@ -134,7 +168,7 @@ namespace Teste.Controllers
                 _context.Empresas.Add(empresa);
                 await _context.SaveChangesAsync();
 
-                // 3. Save Contact
+                //// 3. Salva o Contacto
                 var contacto = new Contacto
                 {
                     Fax1 = model.Fax1,
@@ -147,8 +181,8 @@ namespace Teste.Controllers
                     SedeId = empresa.Id
                 };
                 _context.Contactos.Add(contacto);
-
-                // 4. Save Responsible
+                await _context.SaveChangesAsync();
+                // 4. Salva o Responsável
                 var responsavel = new Responsavel
                 {
                     SedeId = empresa.Id,
@@ -158,27 +192,132 @@ namespace Teste.Controllers
                     Email = model.EmailResponsavel
                 };
                 _context.Responsaveis.Add(responsavel);
-
-                // Save all changes for Empresa
+                await _context.SaveChangesAsync();
+                //// 5. Salva o Gestor
+                var gestorEmpresa = new Gestor
+                {
+                    Genero = model.GeneroGestor,
+                    Nacionalidade = model.NacionalidadeGestor,
+                    Idade = model.IdadeGestor,
+                    SedeId = empresa.Id
+                };
+                _context.Gestores.Add(gestorEmpresa);
                 await _context.SaveChangesAsync();
 
-                await transaction.CommitAsync();
+                var actividadePrincipalExists = await _context.Actividades.AnyAsync(a => a.ActividadeId == model.ActividadePrincipalId);
+                if (!actividadePrincipalExists)
+                {
+                    ModelState.AddModelError("ActividadePrincipalId", "A atividade principal selecionada não existe.");
+                    await transaction.RollbackAsync();
+                    await PopulateDropdownsAfterError(model);
+                    return View(model);
+                }
 
+
+                //// 6. Salva a ActividadeEmpresa
+                var actividadeEmpresa = new ActividadeEmpresa
+                {
+                    EmpresaId = empresa.Id,
+                    ActividadeId = model.ActividadePrincipalId,
+                    Tipo = "Principal"
+                };
+                _context.Add(actividadeEmpresa);
+                await _context.SaveChangesAsync();
+
+                //// 7. Salva varias Actividades da Empresa
+                if (model.ActividadesSecundariasIds != null && model.ActividadesSecundariasIds.Any())
+                {
+                    foreach (var atividadeId in model.ActividadesSecundariasIds)
+                    {
+                        // Verificar se a actividade secundária existe
+                        var actividadeSecundariaExists = await _context.Actividades.AnyAsync(a => a.ActividadeId == atividadeId);
+                        if (!actividadeSecundariaExists)
+                        {
+                            ModelState.AddModelError("ActividadesSecundariasIds", $"A atividade secundária com ID {atividadeId} não existe.");
+                            await transaction.RollbackAsync();
+                            await PopulateDropdownsAfterError(model);
+                            return View(model);
+                        }
+
+                        // Garante que não está tentando salvar a mesma atividade como principal e secundária
+                        if (atividadeId != model.ActividadePrincipalId)
+                        {
+                            var actividadeEmpresaSecundaria = new ActividadeEmpresa
+                            {
+                                EmpresaId = empresa.Id,
+                                ActividadeId = atividadeId,
+                                Tipo = "Secundaria"
+                            };
+                            _context.Add(actividadeEmpresaSecundaria);
+                        }
+                    }
+                }
+
+                var bemPrincipalExists = await _context.Bens.AnyAsync(b => b.BemId == model.BemPrincipalId);
+                if (!bemPrincipalExists)
+                {
+                    ModelState.AddModelError("BemPrincipalId", "O bem principal selecionado não existe.");
+                    await transaction.RollbackAsync();
+                    await PopulateDropdownsAfterError(model);
+                    return View(model);
+                }
+
+
+                //// 8. Salva a EmpresaBem
+                var bemEmpresa = new EmpresaBem
+                {
+                    EmpresaId = empresa.Id,
+                    BemId = model.BemPrincipalId,
+                    Tipo = "Principal"
+
+                };
+                _context.Add(bemEmpresa);
+                await _context.SaveChangesAsync();
+
+                if (model.BensSecundariosIds != null && model.BensSecundariosIds.Any())
+                {
+                    foreach (var bemId in model.BensSecundariosIds)
+                    {
+                        // Verificar se o bem secundário existe
+                        var bemSecundarioExists = await _context.Bens.AnyAsync(b => b.BemId == bemId);
+                        if (!bemSecundarioExists)
+                        {
+                            ModelState.AddModelError("BensSecundariosIds", $"O bem secundário com ID {bemId} não existe.");
+                            await transaction.RollbackAsync();
+                            await PopulateDropdownsAfterError(model);
+                            return View(model);
+                        }
+
+                        // Garante que não está tentando salvar o mesmo bem como principal e secundário
+                        if (bemId != model.BemPrincipalId)
+                        {
+                            var bemEmpresaSecundaria = new EmpresaBem
+                            {
+                                EmpresaId = empresa.Id,
+                                BemId = bemId,
+                                Tipo = "Secundario"
+                            };
+                            _context.Add(bemEmpresaSecundaria);
+                        }
+                    }
+                }
+
+                //// Salva todas as alterações
+
+                //await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
                 TempData["SuccessMessage"] = "Empresa criada com sucesso!";
                 TempData["EmpresaId"] = empresa.Id;
                 return RedirectToAction("Create");
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving data: {ex.Message}"); // Replace with proper logging
                 await transaction.RollbackAsync();
-                ModelState.AddModelError("", "Erro ao gravar os dados. Tente novamente ou contate o suporte.");
-                await PopulateDropdowns(model);
+                ModelState.AddModelError("", $"Erro ao gravar os dados: {ex.Message}");
+                await PopulateDropdownsAfterError(model);
                 return View(model);
             }
-            
-        }
+}
 
         public IActionResult Confirmacao()
         {
@@ -191,19 +330,109 @@ namespace Teste.Controllers
             return View();
         }
 
+        private async Task PopulateDropdownsAfterError(CadastroEmpresaViewModel model)
+        {
+            await PopulateDropdowns(model);
+
+            var actividades = await _actividadeService.GetAllAsync();
+            var bens = await _bemService.GetAllAsync();
+
+            model.TodasActividades = actividades.Select(a => new SelectListItem
+            {
+                Value = a.ActividadeId.ToString(),
+                Text = $"{a.CodigoCAE} - {a.Descricao}",
+                Selected = model.ActividadesSecundariasIds != null && model.ActividadesSecundariasIds.Contains(a.ActividadeId)
+            }).ToList();
+
+            model.TodosBens = bens.Select(b => new SelectListItem
+            {
+                Value = b.BemId.ToString(),
+                Text = $"{b.CodigoCNBS} - {b.Descricao}",
+                Selected = model.BensSecundariosIds != null && model.BensSecundariosIds.Contains(b.BemId)
+            }).ToList();
+
+            ViewBag.Actividades = new SelectList(await _context.Actividades.ToListAsync(), "ActividadeId", "Descricao", model.ActividadePrincipalId);
+            ViewBag.Bens = new SelectList(await _context.Bens.ToListAsync(), "BemId", "Descricao", model.BemPrincipalId);
+        }
+
         private async Task PopulateDropdowns(CadastroEmpresaViewModel model)
         {
             model.TipoEntidades = await GetDropdownOptions<TipoEntidade>();
-            model.FormaJuridicas = await GetDropdownOptions<FormaJuridica>();
             model.SituacaoActividades = await GetDropdownOptions<SituacaoActividade>();
             model.GrupoEmpresarials = await GetDropdownOptions<GrupoEmpresarial>();
             model.SucursalNosPaises = await GetDropdownOptions<SucursalNoPais>();
             model.TipoContabilidades = await GetDropdownOptions<TipoContabilidade>();
+            model.GeneroGestores = await GetDropdownOptions<GeneroGestor>();
+            model.FormaJuridicas = GetFormaJuridicaDropdown();
+            model.Meses = GetMesesDropdown();
+            model.Provincias = GetProvinciasDropdown();
+        }
+
+        private List<SelectListItem> GetMesesDropdown()
+        {
+            return Enum.GetValues(typeof(Mes))
+                .Cast<Mes>()
+                .Select(m => new SelectListItem
+                {
+                    Value = ((int)m).ToString(),
+                    Text = m.ToString()
+                })
+                .ToList();
+        }
+
+        private List<SelectListItem> GetProvinciasDropdown()
+        {
+            return Enum.GetValues(typeof(Provincia))
+                .Cast<Provincia>()
+                .Select(p => new SelectListItem
+                {
+                    Value = p.ToString(),
+                    Text = FormatProvinciaName(p.ToString())
+                })
+                .ToList();
+        }
+
+        private List<SelectListItem> GetFormaJuridicaDropdown()
+        {
+            return Enum.GetValues(typeof(FormaJuridica))
+                .Cast<FormaJuridica>()
+                .Select(p => new SelectListItem
+                {
+                    Value = p.ToString(),
+                    Text = FormatFormaJuridica(p.ToString())
+                })
+                .ToList();
+        }
+
+        private string FormatProvinciaName(string provinciaName)
+        {
+            // Formata os nomes para ficarem mais legíveis
+            return provinciaName switch
+            {
+                "MaputoCidade" => "Cidade de Maputo",
+                "MaputoProvincia" => "Província de Maputo",
+                "CaboDelgado" => "Cabo Delgado",
+                _ => provinciaName
+            };
+        }
+
+        private string FormatFormaJuridica(string formaJuridica)
+        {
+            // Formata os nomes para ficarem mais legíveis
+            return formaJuridica switch
+            {
+                "EmpresaPúblicaEstatal" => "Empresa Pública Estatal",
+                "SociedadeAnónima" => "Sociedade Anónima",
+                "SociedadePorQuotas" => "Sociedade Por Quotas",
+                "SociedadeUnipessoal" => "Sociedade Unipessoal",
+                "EmpresaIndividual" => "Empresa Individual",
+                "ConfissãoReligiosa" => "Confissão Religiosa",
+                _ => formaJuridica
+            };
         }
 
         private async Task<IEnumerable<SelectListItem>> GetDropdownOptions<T>() where T : Enum
         {
-            // Ideally, fetch from a database or configuration
             return Enum.GetValues(typeof(T))
                 .Cast<T>()
                 .Select(e => new SelectListItem
@@ -213,21 +442,7 @@ namespace Teste.Controllers
                 });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> BuscarActividades(string termo)
-        {
-            var actividades = await _actividadeService.SearchAsync(termo);
-            return Json(actividades.Select(a => new { id = a.ActividadeId, text = $"{a.CodigoCAE} - {a.Descricao}" }));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> BuscarBens(string termo)
-        {
-            var bensOuServicos = await _bemService.SearchAsync(termo);
-            return Json(bensOuServicos.Select(a => new { id = a.BemId, text = $"{a.CodigoCNBS} - {a.Descricao}" }));
-        }
-
-        public  async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var empresas = await _context.Empresas.ToListAsync();
             return View(empresas);
@@ -248,7 +463,6 @@ namespace Teste.Controllers
             if (empresa == null) return NotFound();
             var model = new CadastroEmpresaViewModel
             {
-                // Map Empresa properties to ViewModel
                 NUIT = empresa.NUIT,
                 Nome = empresa.Nome,
                 Sigla = empresa.Sigla,
@@ -265,15 +479,111 @@ namespace Teste.Controllers
         }
 
         [HttpPost]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _empresaService.DeleteAsync(id);
+            try
+            {
+                // Verifica se é uma Sede
+                var isSede = await _context.Sedes.AnyAsync(s => s.Id == id);
+                var entityName = isSede ? "Sede" : "Empresa";
+
+                // Conta as dependências para feedback
+                var sucursaisCount = await _empresaService.GetSucursaisCountAsync(id);
+                var actividadesCount = await _empresaService.GetActividadesCountAsync(id);
+                var bensCount = await _empresaService.GetBensCountAsync(id);
+
+                int contactosCount = 0, responsaveisCount = 0, gestoresCount = 0;
+
+                if (isSede)
+                {
+                    contactosCount = await _empresaService.GetContactosCountAsync(id);
+                    responsaveisCount = await _empresaService.GetResponsaveisCountAsync(id);
+                    gestoresCount = await _empresaService.GetGestoresCountAsync(id);
+                }
+
+                var result = await _empresaService.DeleteAsync(id);
+
+                if (result)
+                {
+                    var entity = isSede ?
+                        await _empresaService.GetSedeByIdAsync(id) :
+                        await _empresaService.GetByIdAsync(id);
+
+                    TempData["SuccessMessage"] = $"{entityName} '{entity?.Nome}' excluída com sucesso!";
+
+                    // Informação sobre dependências removidas
+                    var dependencies = new List<string>();
+                    if (actividadesCount > 0) dependencies.Add($"{actividadesCount} actividade(s)");
+                    if (bensCount > 0) dependencies.Add($"{bensCount} bem(ns)");
+                    if (sucursaisCount > 0) dependencies.Add($"{sucursaisCount} sucursal(is)");
+                    if (contactosCount > 0) dependencies.Add($"{contactosCount} contacto(s)");
+                    if (responsaveisCount > 0) dependencies.Add($"{responsaveisCount} responsável(eis)");
+                    if (gestoresCount > 0) dependencies.Add($"{gestoresCount} gestor(e)s");
+
+                    if (dependencies.Any())
+                    {
+                        TempData["InfoMessage"] = "Foram também removidos: " + string.Join(", ", dependencies);
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"{entityName} não encontrada.";
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                TempData["ErrorMessage"] = "Não foi possível excluir devido a restrições de integridade do banco de dados.";
+                System.Diagnostics.Debug.WriteLine($"DbUpdateException: {ex.InnerException?.Message}");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Erro inesperado: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Exception: {ex.Message}");
+            }
+
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmDelete(int id)
+        {
+            // Verifica se é uma Sede
+            var isSede = await _context.Sedes.AnyAsync(s => s.Id == id);
+            var entityName = isSede ? "Sede" : "Empresa";
+
+            object entity = isSede ?
+                await _empresaService.GetSedeByIdAsync(id) :
+                await _empresaService.GetByIdAsync(id);
+
+            if (entity == null)
+            {
+                TempData["ErrorMessage"] = $"{entityName} não encontrada.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.EntityType = entityName;
+            ViewBag.Entity = entity;
+
+            // Contar dependências
+            ViewBag.SucursaisCount = await _empresaService.GetSucursaisCountAsync(id);
+            ViewBag.ActividadesCount = await _empresaService.GetActividadesCountAsync(id);
+            ViewBag.BensCount = await _empresaService.GetBensCountAsync(id);
+
+            if (isSede)
+            {
+                ViewBag.ContactosCount = await _empresaService.GetContactosCountAsync(id);
+                ViewBag.ResponsaveisCount = await _empresaService.GetResponsaveisCountAsync(id);
+                ViewBag.GestoresCount = await _empresaService.GetGestoresCountAsync(id);
+            }
+
+            return View(entity);
         }
     }
 
-    // Define enums for dropdowns (move to a separate file if preferred)
     public enum TipoEntidade { Sede, Sucursal }
+    public enum GeneroGestor { Masculino, Feminino }
     public enum FormaJuridica
     {
         EmpresaPúblicaEstatal,
@@ -298,40 +608,33 @@ namespace Teste.Controllers
     public enum GrupoEmpresarial { Sim, Não }
     public enum SucursalNoPais { Sim, Não }
     public enum TipoContabilidade { Organizada, NãoOrganizada }
+    public enum Mes
+    {
+        Janeiro = 1,
+        Fevereiro = 2,
+        Marco = 3,
+        Abril = 4,
+        Maio = 5,
+        Junho = 6,
+        Julho = 7,
+        Agosto = 8,
+        Setembro = 9,
+        Outubro = 10,
+        Novembro = 11,
+        Dezembro = 12
+    }
+    public enum Provincia
+    {
+        MaputoCidade,
+        MaputoProvincia,
+        Gaza,
+        Inhambane,
+        Sofala,
+        Manica,
+        Tete,
+        Zambezia,
+        Nampula,
+        CaboDelgado,
+        Niassa
+    }
 }
-
-
-// Return JSON response to trigger modal
-//return Json(new
-//{
-//    success = true,
-//    empresaId = empresa.Id,
-//    message = "Empresa criada com sucesso!",
-//    partialView = await this.RenderViewToStringAsync("_SuccessModal", new { EmpresaId = empresa.Id })
-//});
-
-//catch (DbUpdateException ex)
-//{
-//    Console.WriteLine($"Erro ao atualizar o banco de dados: {ex.Message}");
-//    await transaction.RollbackAsync();
-//    ModelState.AddModelError("", "Erro ao gravar os dados no banco de dados. Verifique os valores inseridos.");
-//    await PopulateDropdowns(model);
-//    return Json(new
-//    {
-//        success = false,
-//        errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage),
-//        partialView = await this.RenderViewToStringAsync("Create", model)
-//    });
-//}
-//catch (Exception ex)
-//{
-//    Console.WriteLine($"Error saving data: {ex.Message}"); // Replace with proper logging
-//    await transaction.RollbackAsync();
-//    await PopulateDropdowns(model);
-//    return Json(new
-//    {
-//        success = false,
-//        errors = new[] { "Erro ao gravar os dados. Tente novamente ou contate o suporte." },
-//        partialView = await this.RenderViewToStringAsync("Create", model)
-//    });
-//}

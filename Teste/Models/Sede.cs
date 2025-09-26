@@ -56,25 +56,6 @@ namespace Teste.Models
 
         public ICollection<Contacto> Contactos { get; set; }
         public ICollection<Responsavel> Responsaveis { get; set; } = new List<Responsavel>();
-
+        public ICollection<Gestor> Gestores { get; set; } = new List<Gestor>();
     }
 }
-
-//public int Id { get; set; }
-//public string? NUIT { get; set; }
-//public string? Nome { get; set; }
-//public string? Sigla { get; set; }
-//public string? NumeroAlvara { get; set; }
-//public int? AnoConstituicao { get; set; }
-//public int? DataInicioAno { get; set; }
-//public int? DataInicioMes { get; set; }
-//public int LocalizacaoId { get; set; }
-//[ForeignKey("LocalizacaoId")]
-//public Localizacao Localizacao { get; set; }
-//public int? NumTrabalhadoresHomens { get; set; }
-//public int? NumTrabalhadoresMulheres { get; set; }
-//public string TipoEntidade { get; set; } = string.Empty;
-//public string GrupoEmpresarial { get; set; } = string.Empty;
-//public string? NomeGrupoEmpresarial { get; set; }
-//public string? PaisGrupoEmpresarial { get; set; }
-//public string SituacaoActividade { get; set; } = string.Empty;

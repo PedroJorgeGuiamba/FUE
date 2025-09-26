@@ -12,20 +12,21 @@ namespace Teste.Data
         public DbSet<Sucursal> Sucursais { get; set; }
         public DbSet<Contacto> Contactos { get; set; }
         public DbSet<Actividade> Actividades { get; set; }
-        public DbSet<ActividadeEmpresa> ActividadeEmpresas { get; set; } // ADICIONE
+        public DbSet<ActividadeEmpresa> ActividadeEmpresas { get; set; }
         public DbSet<Localizacao> Localizacoes { get; set; }
         public DbSet<Responsavel> Responsaveis { get; set; }
-        public DbSet<Bem> Bens {  get; set; }
+        public DbSet<Bem> Bens { get; set; }
         public DbSet<EmpresaBem> EmpresaBens { get; set; }
+        public DbSet<Gestor> Gestores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             // Configuração para evitar erro de herança ambígua
-            modelBuilder.Entity<Sede>().UseTptMappingStrategy(); // Table-per-type (opcional)
+            modelBuilder.Entity<Sede>().UseTptMappingStrategy();
 
-            // Configuração para ActividadeEmpresa como many-to-many (se necessário)
+            // Configuração para ActividadeEmpresa como many-to-many
             modelBuilder.Entity<ActividadeEmpresa>()
                 .HasKey(ae => new { ae.EmpresaId, ae.ActividadeId });
 
@@ -34,12 +35,10 @@ namespace Teste.Data
                 .WithMany(e => e.Actividades)
                 .HasForeignKey(ae => ae.EmpresaId);
 
-
             modelBuilder.Entity<ActividadeEmpresa>()
                 .HasOne(ae => ae.Actividade)
-                .WithMany()
+                .WithMany(a => a.ActividadeEmpresas)
                 .HasForeignKey(ae => ae.ActividadeId);
-
 
             modelBuilder.Entity<EmpresaBem>()
                 .HasKey(ae => new { ae.EmpresaId, ae.BemId });
@@ -48,7 +47,6 @@ namespace Teste.Data
                 .HasOne(ae => ae.Empresa)
                 .WithMany(e => e.Bens)
                 .HasForeignKey(ae => ae.EmpresaId);
-
 
             modelBuilder.Entity<EmpresaBem>()
                 .HasOne(ae => ae.Bem)
@@ -59,8 +57,7 @@ namespace Teste.Data
                 .HasOne(s => s.Empresa)
                 .WithMany(e => e.Sucursais)
                 .HasForeignKey(s => s.EmpresaId)
-                .OnDelete(DeleteBehavior.Restrict);  // ou ClientSetNull
-
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Sede>()
                 .HasOne(s => s.Localizacao)
@@ -71,12 +68,18 @@ namespace Teste.Data
                 .HasOne(c => c.Sede)
                 .WithMany(s => s.Contactos)
                 .HasForeignKey(c => c.SedeId);
-            
+
             modelBuilder.Entity<Responsavel>()
                 .HasOne(r => r.Sede)
                 .WithMany(s => s.Responsaveis)
                 .HasForeignKey(r => r.SedeId)
-                .OnDelete(DeleteBehavior.Cascade); // ou ClientSetNull se preferir
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Gestor>()
+                .HasOne(r => r.Sede)
+                .WithMany(s => s.Gestores)
+                .HasForeignKey(r => r.SedeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
