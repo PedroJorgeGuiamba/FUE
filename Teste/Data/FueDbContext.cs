@@ -13,6 +13,7 @@ namespace Teste.Data
         public DbSet<Contacto> Contactos { get; set; }
         public DbSet<Actividade> Actividades { get; set; }
         public DbSet<ActividadeEmpresa> ActividadeEmpresas { get; set; }
+        public DbSet<ActividadeSucursal> ActividadeSucursais { get; set; }
         public DbSet<Localizacao> Localizacoes { get; set; }
         public DbSet<Responsavel> Responsaveis { get; set; }
         public DbSet<Bem> Bens { get; set; }
@@ -30,6 +31,9 @@ namespace Teste.Data
             modelBuilder.Entity<ActividadeEmpresa>()
                 .HasKey(ae => new { ae.EmpresaId, ae.ActividadeId });
 
+            modelBuilder.Entity<ActividadeSucursal>()
+               .HasKey(ae => new { ae.SucursalId, ae.ActividadeId });
+
             modelBuilder.Entity<ActividadeEmpresa>()
                 .HasOne(ae => ae.Empresa)
                 .WithMany(e => e.Actividades)
@@ -38,6 +42,16 @@ namespace Teste.Data
             modelBuilder.Entity<ActividadeEmpresa>()
                 .HasOne(ae => ae.Actividade)
                 .WithMany(a => a.ActividadeEmpresas)
+                .HasForeignKey(ae => ae.ActividadeId);
+
+            modelBuilder.Entity<ActividadeSucursal>()
+                .HasOne(ae => ae.Sucursal)
+                .WithMany(e => e.Actividades)
+                .HasForeignKey(ae => ae.SucursalId);
+
+            modelBuilder.Entity<ActividadeSucursal>()
+                .HasOne(ae => ae.Actividade)
+                .WithMany(a => a.ActividadeSucursais)
                 .HasForeignKey(ae => ae.ActividadeId);
 
             modelBuilder.Entity<EmpresaBem>()

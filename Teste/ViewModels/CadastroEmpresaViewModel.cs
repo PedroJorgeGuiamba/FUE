@@ -110,6 +110,7 @@ namespace Teste.ViewModels
 
         [Required(ErrorMessage = "Situação da Atividade é obrigatória.")]
         public string SituacaoActividade { get; set; } = string.Empty;
+        public int? AnoEncerramento { get; set; }
 
         [Required(ErrorMessage = "Grupo Empresarial é obrigatório.")]
         public string GrupoEmpresarial { get; set; } = string.Empty;

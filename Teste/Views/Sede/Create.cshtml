@@ -275,6 +275,11 @@
                     <span asp-validation-for="SituacaoActividade" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-3">
+                    <label asp-for="AnoEncerramento">Ano de Encerramento ou Interrupção (para o campo anterior preenchido com [Interrompida] ou [Encerrada]):</label>
+                    <input asp-for="AnoEncerramento" class="form-control" type="number" />
+                    <span asp-validation-for="AnoEncerramento" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
                     <label asp-for="FormaJuridica">Forma Jurídica:</label>
                     <select asp-for="FormaJuridica" class="form-control select2" asp-items="Model.FormaJuridicas">
                         <option value="">Selecione a forma jurídica</option>

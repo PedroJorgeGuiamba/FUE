@@ -1,6 +1,7 @@
 ﻿ @model Teste.ViewModels.CadastroSucursalViewModel
 @{
     Layout = "~/Views/Shared/_LayoutFormando.cshtml";
+    ViewData["Title"] = "Formulário de Cadastro de Sucursais";
 }
 
 <h2>
@@ -161,37 +162,6 @@
         </div>
     </div>
 
-    <!-- Bloco AA4: Responsável da Sucursal -->
-    @* <div class="card mb-3">
-        <div class="card-header text-bg-dark mb-3">
-            AA4: RESPONSÁVEL DA SUCURSAL
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="form-group col-md-3">
-                    <label asp-for="NomeResponsavel_Sucursal">Nome:</label>
-                    <input asp-for="NomeResponsavel_Sucursal" class="form-control" />
-                    <span asp-validation-for="NomeResponsavel_Sucursal" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="FuncaoResponsavel_Sucursal">Função/Cargo:</label>
-                    <input asp-for="FuncaoResponsavel_Sucursal" class="form-control" />
-                    <span asp-validation-for="FuncaoResponsavel_Sucursal" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="TelemovelResponsavel_Sucursal">Telemóvel:</label>
-                    <input asp-for="TelemovelResponsavel_Sucursal" class="form-control" />
-                    <span asp-validation-for="TelemovelResponsavel_Sucursal" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="EmailResponsavel_Sucursal">E-mail:</label>
-                    <input asp-for="EmailResponsavel_Sucursal" class="form-control" />
-                    <span asp-validation-for="EmailResponsavel_Sucursal" class="text-danger"></span>
-                </div>
-            </div>
-        </div>
-    </div> *@
-
     <!-- Bloco A4: Responsável pelo Preenchimento -->
     <div class="card mb-3">
         <div class="card-header text-bg-dark mb-3">
@@ -238,30 +208,11 @@
                     </select>
                     <span asp-validation-for="SituacaoActividade_Sucursal" class="text-danger"></span>
                 </div>
-                @* <div class="form-group col-md-3">
-                    <label asp-for="GrupoEmpresarial_Sucursal">A entidade pertence a um grupo ou holding:</label>
-                    <select asp-for="GrupoEmpresarial_Sucursal" class="form-control select2" asp-items="Model.GrupoEmpresarials_Sucursal">
-                        <option value="">Selecione a Opção</option>
-                    </select>
-                    <span asp-validation-for="GrupoEmpresarial_Sucursal" class="text-danger"></span>
-                </div>
                 <div class="form-group col-md-3">
-                    <label asp-for="NomeGrupoEmpresarial_Sucursal">Nome do Grupo:</label>
-                    <input asp-for="NomeGrupoEmpresarial_Sucursal" class="form-control" />
-                    <span asp-validation-for="NomeGrupoEmpresarial_Sucursal" class="text-danger"></span>
+                    <label asp-for="AnoEncerramento">Ano de Encerramento ou Interrupção (para o campo anterior preenchido com Interrompida ou Encerrada):</label>
+                    <input asp-for="AnoEncerramento" class="form-control" type="number" />
+                    <span asp-validation-for="AnoEncerramento" class="text-danger"></span>
                 </div>
-                <div class="form-group col-md-3">
-                    <label asp-for="PaisGrupoEmpresarial_Sucursal">Localização do grupo (País):</label>
-                    <input asp-for="PaisGrupoEmpresarial_Sucursal" class="form-control" />
-                    <span asp-validation-for="PaisGrupoEmpresarial_Sucursal" class="text-danger"></span>
-                </div> *@
-                @* <div class="form-group col-md-6">
-                    <label asp-for="ActividadePrincipalId_Sucursal" class="control-label">Actividade Principal</label>
-                    <select asp-for="ActividadePrincipalId_Sucursal" asp-items="ViewBag.Actividades" class="form-control">
-                        <option value="">Selecione uma Actividade</option>
-                    </select>
-                    <span asp-validation-for="ActividadePrincipalId_Sucursal" class="text-danger"></span>
-                </div> *@
                 <div class="form-group col-md-6">
                     <label asp-for="ActividadePrincipalId" class="control-label">Actividade Principal</label>
                     <select asp-for="ActividadePrincipalId" asp-items="ViewBag.Actividades" class="form-control">

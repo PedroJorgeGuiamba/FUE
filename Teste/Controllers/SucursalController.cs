@@ -110,6 +110,7 @@ namespace Teste.Controllers
                     LocalizacaoId = localizacao.LocalizacaoId,
                     TipoEntidade = model.TipoEntidade_Sucursal,
                     SituacaoActividade = model.SituacaoActividade_Sucursal,
+                    AnoEncerramento = model.AnoEncerramento,
                     NumTrabalhadoresHomens = (int)model.NumTrabalhadoresHomens_Sucursal,
                     NumTrabalhadoresMulheres = (int)model.NumTrabalhadoresMulheres_Sucursal,
                     Empresa = _context.Empresas.Find(model.EmpresaId),
@@ -144,26 +145,6 @@ namespace Teste.Controllers
                 _context.Gestores.Add(gestorEmpresa);
                 await _context.SaveChangesAsync();
 
-                //var actividadePrincipalExists = await _context.Actividades.AnyAsync(a => a.ActividadeId == model.ActividadePrincipalId_Sucursal);
-                //if (!actividadePrincipalExists)
-                //{
-                //    ModelState.AddModelError("ActividadePrincipalId_Sucursal", "A atividade principal selecionada não existe.");
-                //    await transaction.RollbackAsync();
-                //    await PopulateDropdownsAfterError(model);
-                //    return View(model);
-                //}
-
-
-                //// 6. Salva a ActividadeEmpresa
-                //var actividadeEmpresa = new ActividadeEmpresa
-                //{
-                //    EmpresaId = sucursal.Id,
-                //    ActividadeId = model.ActividadePrincipalId_Sucursal,
-                //    Tipo = "Principal"
-                //};
-                //_context.Add(actividadeEmpresa);
-                //await _context.SaveChangesAsync();
-
                 var actividadePrincipalExists = await _context.Actividades.AnyAsync(a => a.ActividadeId == model.ActividadePrincipalId);
                 if (!actividadePrincipalExists)
                 {
@@ -175,13 +156,13 @@ namespace Teste.Controllers
 
 
                 //// 6. Salva a ActividadeEmpresa
-                var actividadeEmpresa = new ActividadeEmpresa
+                var actividadeSucursal = new ActividadeSucursal
                 {
-                    EmpresaId = empresa.Id,
+                    SucursalId = sucursal.Id,
                     ActividadeId = model.ActividadePrincipalId,
                     Tipo = "Principal"
                 };
-                _context.Add(actividadeEmpresa);
+                _context.Add(actividadeSucursal);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
@@ -193,8 +174,8 @@ namespace Teste.Controllers
             {
                 //    Console.WriteLine($"Error saving sucursal: {ex.Message}");
                 await transaction.RollbackAsync();
-                ModelState.AddModelError(string.Empty, "Erro ao gravar os dados. Tente novamente ou contate o suporte.");
-                await PopulateDropdowns(model);
+                ModelState.AddModelError(string.Empty, "Erro ao gravar os dados. Tente novamente ou contate o suporte. " + ex.Message);
+                await PopulateDropdownsAfterError(model);
                 return View(model);
             }
         }
@@ -245,7 +226,6 @@ namespace Teste.Controllers
         }
         private async Task PopulateDropdowns(CadastroSucursalViewModel model)
         {
-            //model.TipoEntidades_Sucursal = await GetDropdownOptions<TipoEntidade>();
             model.SituacaoActividades_Sucursal = await GetDropdownOptions<SituacaoActividade>();
             model.GrupoEmpresarials_Sucursal = await GetDropdownOptions<GrupoEmpresarial>();
             model.GeneroGestores = await GetDropdownOptions<GeneroGestor>();
@@ -256,9 +236,6 @@ namespace Teste.Controllers
         private async Task PopulateDropdownsAfterError(CadastroSucursalViewModel model)
         {
             await PopulateDropdowns(model);
-
-            var actividades = await _actividadeService.GetAllAsync();
-
             ViewBag.Actividades = new SelectList(await _context.Actividades.ToListAsync(), "ActividadeId", "Descricao", model.ActividadePrincipalId);
         }
 

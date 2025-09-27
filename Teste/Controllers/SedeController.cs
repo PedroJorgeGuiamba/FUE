@@ -153,6 +153,7 @@ namespace Teste.Controllers
                     FormaJuridica = model.FormaJuridica,
                     TipoContabilidade = model.TipoContabilidade,
                     SituacaoActividade = model.SituacaoActividade,
+                    AnoEncerramento = model.AnoEncerramento, 
                     SucursalNoPais = model.SucursalNoPais,
                     QuantidadeSucursalNoPais = model.QuantidadeSucursalNoPais,
                     GrupoEmpresarial = model.GrupoEmpresarial,

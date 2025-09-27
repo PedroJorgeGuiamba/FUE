@@ -9,51 +9,48 @@ namespace Teste.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "NUIT é obrigatório.")]
-        public string NUIT { get; set; } // Non-nullable to align with ViewModel
+        public string NUIT { get; set; }
 
         [Required(ErrorMessage = "Nome é obrigatório.")]
-        public string Nome { get; set; } // Non-nullable
+        public string Nome { get; set; }
 
         [Required(ErrorMessage = "Sigla é obrigatória.")]
-        public string Sigla { get; set; } // Non-nullable
+        public string Sigla { get; set; }
 
         [Required(ErrorMessage = "Número do Alvará é obrigatório.")]
-        public string NumeroAlvara { get; set; } // Non-nullable
+        public string NumeroAlvara { get; set; }
 
         [Required(ErrorMessage = "Ano de Constituição é obrigatório.")]
-        public int AnoConstituicao { get; set; } // Non-nullable
+        public int AnoConstituicao { get; set; }
 
         [Required(ErrorMessage = "Data de Início (Ano) é obrigatória.")]
-        public int DataInicioAno { get; set; } // Non-nullable
+        public int DataInicioAno { get; set; }
 
         [Required(ErrorMessage = "Data de Início (Mês) é obrigatória.")]
-        public int DataInicioMes { get; set; } // Non-nullable
+        public int DataInicioMes { get; set; }
 
         [Required(ErrorMessage = "Localização é obrigatória.")]
         public int LocalizacaoId { get; set; }
 
         [ForeignKey("LocalizacaoId")]
-        public Localizacao Localizacao { get; set; } = null!; // Non-null navigation property
+        public Localizacao Localizacao { get; set; } = null!;
 
         [Required(ErrorMessage = "Número de Trabalhadores Homens é obrigatório.")]
-        public int NumTrabalhadoresHomens { get; set; } // Non-nullable
+        public int NumTrabalhadoresHomens { get; set; }
 
         [Required(ErrorMessage = "Número de Trabalhadores Mulheres é obrigatório.")]
-        public int NumTrabalhadoresMulheres { get; set; } // Non-nullable
+        public int NumTrabalhadoresMulheres { get; set; }
 
         [Required(ErrorMessage = "Tipo de Entidade é obrigatório.")]
         public string TipoEntidade { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Grupo Empresarial é obrigatório.")]
         public string GrupoEmpresarial { get; set; } = string.Empty;
-
-        public string? NomeGrupoEmpresarial { get; set; } // Nullable, as it's optional
-
-        public string? PaisGrupoEmpresarial { get; set; } // Nullable, as it's optional
-
+        public string? NomeGrupoEmpresarial { get; set; }
+        public string? PaisGrupoEmpresarial { get; set; }
         [Required(ErrorMessage = "Situação da Atividade é obrigatória.")]
         public string SituacaoActividade { get; set; } = string.Empty;
-
+        public int? AnoEncerramento { get; set; } //Vai servir para armazzenar os anos dos que interromperram actividades ou encerraram
         public ICollection<Contacto> Contactos { get; set; }
         public ICollection<Responsavel> Responsaveis { get; set; } = new List<Responsavel>();
         public ICollection<Gestor> Gestores { get; set; } = new List<Gestor>();

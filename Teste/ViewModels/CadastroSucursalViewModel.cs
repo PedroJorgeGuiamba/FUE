@@ -36,12 +36,6 @@ namespace Teste.ViewModels
         public string? Email_Sucursal { get; set; }
         public string? Website_Sucursal { get; set; }
 
-        //// Bloco AA4 - Responsável do Estabelecimento/Sucursal
-        //public string? NomeResponsavel_Sucursal { get; set; }
-        //public string? FuncaoResponsavel_Sucursal { get; set; }
-        //public string? TelemovelResponsavel_Sucursal { get; set; }
-        //public string? EmailResponsavel_Sucursal { get; set; }
-
         // AA4: INFORMAÇÃO SOBRE A GESTÃO DO ESTABELECIMENTO OU SUCURSAL 
 
         [Required(ErrorMessage = "Nacionalidade do Gerente ou equivalente é obrigatório.")]
@@ -54,10 +48,15 @@ namespace Teste.ViewModels
         public int IdadeGestor_Sucursal { get; set; }
 
         // Bloco BB1 - Caracterização do Estabelecimento/Sucursal
-        public int? NumTrabalhadoresHomens_Sucursal { get; set; }
-        public int? NumTrabalhadoresMulheres_Sucursal { get; set; }
+        [Required(ErrorMessage = "Número de Trabalhadores Homens é obrigatório.")]
+        public int NumTrabalhadoresHomens_Sucursal { get; set; }
+
+        [Required(ErrorMessage = "Número de Trabalhadores Mulheres é obrigatório.")]
+        public int NumTrabalhadoresMulheres_Sucursal { get; set; }
+
         public string? TipoEntidade_Sucursal { get; set; } = "Sucursal";
         public string? SituacaoActividade_Sucursal { get; set; }
+        public int? AnoEncerramento { get; set; }
         [Required(ErrorMessage = "Selecione uma Actividade")]
         public int ActividadePrincipalId { get; set; }
         public List<SelectListItem> Actividades { get; set; } = new List<SelectListItem>();

@@ -11,8 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Sede\CreateSucursal.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Controllers\controller.txt" />
     <None Remove="Controllers\SedeController.txt" />
+    <None Remove="Views\Sucursal\Sucursal.txt" />
   </ItemGroup>
 
   <ItemGroup>

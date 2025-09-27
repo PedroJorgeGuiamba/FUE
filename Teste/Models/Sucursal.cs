@@ -13,9 +13,7 @@ namespace Teste.Models
 
         [ForeignKey("EmpresaId")]
         public Empresa Empresa { get; set; } = null!;
+
+        public ICollection<ActividadeSucursal> Actividades { get; set; } = new List<ActividadeSucursal>();
     }
 }
-
-// Non-null navigation property
-//public int EmpresaId { get; set; } // chave estrangeira
-//public Empresa Empresa { get; set; }
